@@ -1,11 +1,29 @@
 {
   "_comment": "Hand-set values merged into catalog.json by tools/sync_catalog.py (keys starting with _ are ignored).",
   "polytrack": {
-    "_why": "Polytrack checks its 3D models with crypto.subtle.digest, which only exists on secure pages. An extension page is an opaque NavigateToString document, so no frame inside it is a secure context; the game crashes there but runs in a normal PhantomHaze tab.",
-    "open": "tab"
+    "_why": "Polytrack loads webpack chunks, a physics worker and its physics library on the fly. The arcade downloads them first so it can hand them to the game.",
+    "prefetch": [
+      "polytrack/57.bundle.js",
+      "polytrack/124.bundle.js",
+      "polytrack/142.bundle.js",
+      "polytrack/168.bundle.js",
+      "polytrack/280.bundle.js",
+      "polytrack/789.bundle.js",
+      "polytrack/982.bundle.js",
+      "polytrack/simulation_worker.bundle.js",
+      "polytrack/lib/polytrack_physics.js"
+    ]
   },
-  "minecraft-classic": { "_why": "Runs classic.minecraft.net, which the arcade cannot test offline: offer a tab as a fallback.", "tabButton": true },
-  "vent-crawlers-beta": { "_why": "Runs on arcade.makecode.com: offer a tab as a fallback.", "tabButton": true },
-  "arrow-battles": { "_why": "Runs on arcade.makecode.com: offer a tab as a fallback.", "tabButton": true },
-  "suggestion-box": { "_why": "Embeds a Microsoft Forms page: offer a tab as a fallback.", "tabButton": true }
+  "minecraft-classic": {
+    "_why": "Plays classic.minecraft.net, which the arcade cannot test offline: offer that site in a tab as a fallback.",
+    "tabButton": true,
+    "tabUrl": "https://classic.minecraft.net"
+  },
+  "vent-crawlers-beta": { "_why": "Runs on arcade.makecode.com: offer its share page in a tab as a fallback.", "tabButton": true },
+  "arrow-battles": { "_why": "Runs on arcade.makecode.com: offer its share page in a tab as a fallback.", "tabButton": true },
+  "suggestion-box": {
+    "_why": "Embeds a Microsoft Forms page: offer the form in a tab as a fallback.",
+    "tabButton": true,
+    "tabUrl": "https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAYAADQ8dm5UREtUQjk2S0JGQ0xYQTZHNjFPQzhONUZPUC4u"
+  }
 }

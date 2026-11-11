@@ -5,10 +5,11 @@
 
 Writes:
   dist/Haze Arcade.phext   the PhantomHaze extension (import it from Settings -> Extensions)
-  dist/haze-arcade.html    the same page with the settings at their defaults, to open in a browser
+  dist/haze-arcade.html    the same page, to open in a browser for a quick look
 
-PhantomHaze shows extension pages with WebView2's NavigateToString, which refuses pages over 2 MB, so the
-games themselves stay on ftgames.xyz and only the arcade (page, thumbnails, fonts) goes into the file.
+PhantomHaze shows extension pages with WebView2's NavigateToString, which refuses pages over 2 MB, while the FT
+Games library is about 260 MB. So the file holds the arcade (page, thumbnails, fonts) and the arcade downloads each
+game from the FT-Games/ftgames repository on GitHub when it is played.
 """
 
 from __future__ import annotations
@@ -25,20 +26,11 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src"
 DIST = ROOT / "dist"
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 EXTENSION_ID = "ftgames.haze-arcade"
 PAGE_TERMINATOR = "HAZE_ARCADE_PAGE"
 ICON_TERMINATOR = "HAZE_ARCADE_ICON"
-TAB_TERMINATOR = "HAZE_ARCADE_TAB"
-TAB_PATTERN = "https://ftgames.xyz/*"
-
-# Settings shown in Settings -> Extensions -> Haze Arcade: (command, key, label, default, extra args)
-SETTINGS = [
-    ("setting.number", "holdSeconds", "Seconds the loading screen stays up after everything has loaded", "5", "0 30"),
-    ("setting.toggle", "liveList", "Check ftgames.xyz for new games each time the arcade opens", "true", ""),
-    ("setting.text", "server", "FT Games website address (only change this if the site moves)", "https://ftgames.xyz", ""),
-]
-ALLOWED_PLACEHOLDERS = {"{{setting.holdSeconds}}", "{{setting.liveList}}", "{{setting.server}}", "{{extension.version}}"}
+ALLOWED_PLACEHOLDERS = {"{{extension.version}}"}
 
 # NavigateToString takes at most 2 MB; keep well clear of it (CRLF line endings on Windows included).
 PAGE_BUDGET_BYTES = 1_500_000
@@ -64,6 +56,13 @@ def build_catalog() -> str:
     return text.replace("</", "<\\/").replace("<!--", "<\\u0021--")
 
 
+def build_script() -> str:
+    script = (SRC / "arcade.js").read_text(encoding="utf-8")
+    if re.search(r"</script|<!--", script, re.I):
+        sys.exit("build: src/arcade.js must not contain '</script' or '<!--' (it is inlined into the page)")
+    return script.rstrip("\n")
+
+
 def build_page() -> str:
     page = (SRC / "arcade.html").read_text(encoding="utf-8")
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -72,28 +71,13 @@ def build_page() -> str:
         "@@FONT_NEON@@": b64(SRC / "fonts" / "haze-neon.woff2"),
         "@@FONT_PIXEL@@": b64(SRC / "fonts" / "haze-pixel.woff2"),
         "@@CATALOG_JSON@@": build_catalog(),
+        "@@ARCADE_JS@@": build_script(),
     }
     for marker, value in replacements.items():
         if page.count(marker) != 1:
             sys.exit(f"build: expected exactly one {marker} in src/arcade.html")
         page = page.replace(marker, value)
     return page
-
-
-def build_tab_script() -> str:
-    """The loading screen for games the arcade opens in a PhantomHaze tab (a web.script)."""
-    script = (SRC / "tab-loader.js").read_text(encoding="utf-8")
-    for marker, value in {"@@FONT_NEON@@": b64(SRC / "fonts" / "haze-neon.woff2"), "@@FONT_PIXEL@@": b64(SRC / "fonts" / "haze-pixel.woff2")}.items():
-        if script.count(marker) != 1:
-            sys.exit(f"build: expected exactly one {marker} in src/tab-loader.js")
-        script = script.replace(marker, value)
-    try:
-        script.encode("ascii")
-    except UnicodeEncodeError as error:
-        sys.exit(f"build: non-ASCII character in src/tab-loader.js at offset {error.start}")
-    if any(line.strip() == TAB_TERMINATOR for line in script.splitlines()) or re.search(r"\{\{(?:extension|setting)\.", script):
-        sys.exit("build: src/tab-loader.js contains the heredoc terminator or a placeholder")
-    return script
 
 
 def check_page(page: str) -> None:
@@ -111,6 +95,8 @@ def check_page(page: str) -> None:
         problems.append(f"unexpected placeholders: {sorted(placeholders - ALLOWED_PLACEHOLDERS)}")
     if "@@" in page:
         problems.append("an @@MARKER@@ was left in the page")
+    if re.search(r"https?://(www\.)?ftgames\.xyz/[a-z0-9_]", page, re.I):
+        problems.append("the page loads something from ftgames.xyz; games must come from GitHub")
     windows_bytes = len(page.encode("utf-8")) + page.count("\n") + 2
     if windows_bytes > PAGE_BUDGET_BYTES:
         problems.append(f"page is {windows_bytes} bytes, over the {PAGE_BUDGET_BYTES} byte budget")
@@ -119,15 +105,11 @@ def check_page(page: str) -> None:
 
 
 def resolve_defaults(page: str) -> str:
-    """What PhantomHaze would render with the default settings (values are HTML-encoded in pages)."""
-    values = {f"{{{{setting.{key}}}}}": default for _, key, _, default, _ in SETTINGS}
-    values["{{extension.version}}"] = VERSION
-    for placeholder, value in values.items():
-        page = page.replace(placeholder, html.escape(value, quote=True))
-    return page
+    """What PhantomHaze renders (placeholder values are HTML-encoded in pages)."""
+    return page.replace("{{extension.version}}", html.escape(VERSION, quote=True))
 
 
-def build_phext(page: str, tab_script: str) -> str:
+def build_phext(page: str) -> str:
     icon = "data:image/svg+xml;base64," + b64(SRC / "icon-extension.svg")
     menu_icon = (SRC / "icon-menu.svg").read_text(encoding="utf-8").strip()
     lines = [
@@ -138,14 +120,8 @@ def build_phext(page: str, tab_script: str) -> str:
         f"meta.name {phext_quote('Haze Arcade')}",
         f"meta.id {phext_quote(EXTENSION_ID)}",
         f"meta.version {phext_quote(VERSION)}",
-        f"meta.description {phext_quote('Play the whole FT Games library in its own Haze Arcade tab, with a neon loading screen.')}",
+        f"meta.description {phext_quote('Play the whole FT Games library, downloaded from GitHub, in its own Haze Arcade tab.')}",
         f"meta.icon {phext_quote(icon)}",
-        "",
-    ]
-    for command, key, label, default, extra in SETTINGS:
-        value = default if command != "setting.text" else phext_quote(default)
-        lines.append(" ".join(part for part in (command, key, phext_quote(label), value, extra) if part))
-    lines += [
         "",
         "# The arcade page: a button next to Logs and Web View in the menu bar.",
         f"app.page arcade {phext_quote('Haze Arcade')} <<{PAGE_TERMINATOR}",
@@ -161,12 +137,6 @@ def build_phext(page: str, tab_script: str) -> str:
         f"ui.element arcade foreground {phext_quote('#00e5ff')}",
         f"ui.shape arcade pill {phext_quote('#16052e')} {phext_quote('#ff2bd6')}",
         "",
-        "# Games that need a full browser tab (Polytrack) open in a PhantomHaze tab marked #haze-arcade;",
-        "# this shows the same loading screen there. It does nothing on pages the arcade did not open.",
-        f"web.script tabLoader {phext_quote(TAB_PATTERN)} document-end <<{TAB_TERMINATOR}",
-        tab_script.rstrip("\n"),
-        TAB_TERMINATOR,
-        "",
     ]
     text = "\n".join(lines)
     text.encode("ascii")
@@ -178,7 +148,7 @@ def main() -> None:
     check_page(page)
     DIST.mkdir(exist_ok=True)
     (DIST / "haze-arcade.html").write_text(resolve_defaults(page), encoding="ascii", newline="\n")
-    phext = build_phext(page, build_tab_script())
+    phext = build_phext(page)
     (DIST / "Haze Arcade.phext").write_text(phext, encoding="ascii", newline="\n")
     print(f"dist/Haze Arcade.phext  {len(phext.encode()):>9,} bytes")
     print(f"dist/haze-arcade.html   {len(page.encode()):>9,} bytes (page)")

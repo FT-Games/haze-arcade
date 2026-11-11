@@ -3,10 +3,11 @@
 
     python3 tools/sync_catalog.py /path/to/ftgames
 
-The arcade shows the cards of games.html in the same order. For every card the
-script records how the game page is built (its Home / Instructions buttons, its
-instructions page) and how much it downloads, so the arcade can cover the
-page's own buttons and keep its loading screen up until the game is loaded.
+The arcade shows the cards of games.html in the same order and loads every game
+from the FT-Games/ftgames repository on GitHub. For every card this records the
+game's page in the repository, whether it is a TurboWarp (Scratch) page, its
+instructions page, the scripts it loads on the fly and how much it downloads (for
+the loading bar).
 """
 
 from __future__ import annotations
@@ -95,58 +96,29 @@ def slugify(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
 
 
-def effective_line_height(css: str) -> str:
-    """The line-height a rule ends up with. Note that `font: ... !important` resets it to normal and beats a later
-    plain `line-height: 1`, which is what most FT Games pages do (their buttons are 42px tall, not 39px)."""
-    value, important = "normal", False
-    for declaration in css.split(";"):
-        if ":" not in declaration:
-            continue
-        prop, val = (part.strip().lower() for part in declaration.split(":", 1))
-        is_important = "!important" in val
-        val = val.replace("!important", "").strip()
-        if prop == "font":
-            m = re.search(r"\d(?:px|pt|em|rem|%)?\s*/\s*([\w.]+)", val)
-            new = m.group(1) if m else "normal"
-        elif prop == "line-height":
-            new = val
-        else:
-            continue
-        if is_important or not important:
-            value, important = new, is_important or important
-    return "1" if value in ("1", "1.0") else "normal"
-
-
 def button_profile(page_html: str) -> dict:
-    """How the page draws its own Home / Instructions buttons, so the arcade can cover them exactly."""
-    has_home = 'id="homeButton"' in page_html
-    has_instr = 'id="instructionsButton"' in page_html
-    rule = re.search(r"#homeButton\s*,\s*#instructionsButton\s*\{([^}]*)\}", page_html) or re.search(r"#homeButton\s*\{([^}]*)\}", page_html)
-    css = rule.group(1) if rule else ""
-    display = "flex" if re.search(r"display\s*:\s*inline-flex", css) else "block"
-    return {"home": has_home, "instr": has_instr, "display": display, "lineHeight": effective_line_height(css)}
+    """Whether the page has its own way back to the games page and its own Instructions button."""
+    home_link = re.search(r"""<a\b[^>]*\bhref=["'](?:https?://ftgames\.xyz)?/(?:games(?:\.html)?)?["']""", page_html)
+    return {"home": 'id="homeButton"' in page_html or bool(home_link), "instr": 'id="instructionsButton"' in page_html}
 
 
 def find_instructions(repo: Path, top: str, page_html: str, has_button: bool) -> str | None:
-    """The instructions page the game's Instructions button opens (as a path on the site)."""
+    """The instructions page the game's Instructions button opens, as a file in the repository."""
     if not has_button:
         return None
     m = re.search(r"window\.open\(\s*[\"'`]([^\"'`]+)[\"'`]", page_html)
     candidate = None
     if m:
-        target = m.group(1)
-        target = re.sub(r"^https://ftgames\.xyz", "", target)
+        target = re.sub(r"^https?://ftgames\.xyz", "", m.group(1))
         if target.startswith("/"):
-            candidate = target
+            candidate = target.lstrip("/")
     if candidate is None and (repo / top / "instructions.html").is_file():
-        candidate = f"/{top}/instructions"  # the button exists but the page forgot its click handler
+        candidate = f"{top}/instructions"  # the button exists but the page forgot its click handler
     if candidate is None:
         return None
-    # Ask for the .html file itself: no redirect, and no clash with a folder of the same name.
-    file_path = repo / candidate.lstrip("/")
-    if not candidate.endswith(".html") and (file_path.parent / (file_path.name + ".html")).is_file():
+    if not candidate.endswith(".html") and (repo / (candidate + ".html")).is_file():
         candidate += ".html"
-    return candidate
+    return candidate if (repo / candidate).is_file() else None
 
 
 def make_thumb(repo: Path, src: str, out: Path) -> None:
@@ -187,46 +159,43 @@ def main() -> None:
         }
         if href.startswith(MAKECODE_HOST):
             share_id = href[len(MAKECODE_HOST):].strip("/")
-            entry.update(id=slugify(entry["title"]), kind="makecode",
-                         url=f"{MAKECODE_HOST}---run?id={share_id}",
-                         frame=[f"{MAKECODE_HOST}---run"], buttons={"home": False, "instr": False, "display": "flex", "lineHeight": "normal"},
-                         instructions=None, preloadBytes=0, lazyBytes=0)
+            entry.update(id=slugify(entry["title"]), kind="makecode", url=f"{MAKECODE_HOST}---run?id={share_id}",
+                         tabUrl=href, buttons={"home": False, "instr": False}, instructions=None, bytes=0)
         elif href.startswith("/"):
             parts = [p for p in href.split("/") if p]
             top = parts[0]
             if (repo / top).is_dir():
-                if len(parts) > 1:
-                    rel = "/".join(parts)
-                    url = f"/{rel}.html" if (repo / (rel + ".html")).is_file() else f"/{rel}"
-                    page_file = repo / (rel + ".html") if (repo / (rel + ".html")).is_file() else repo / rel / "index.html"
+                rel = "/".join(parts)
+                if len(parts) > 1 and (repo / (rel + ".html")).is_file():
+                    file = rel + ".html"
+                elif (repo / rel / "index.html").is_file():
+                    file = rel + "/index.html"
                 else:
-                    url = f"/{top}/"
-                    page_file = repo / top / "index.html"
+                    print(f"warning: {href} has no page in the checkout; skipped", file=sys.stderr)
+                    continue
             elif (repo / (top + ".html")).is_file():
-                url = f"/{top}"
-                page_file = repo / (top + ".html")
+                file = top + ".html"
             else:
                 print(f"warning: {href} is not in the checkout; skipped", file=sys.stderr)
                 continue
+            page_file = repo / file
             page_html = page_file.read_text(encoding="utf-8", errors="replace")
             buttons = button_profile(page_html)
-            instructions = find_instructions(repo, top, page_html, buttons["instr"])
-            # Everything the page needs before its load event: the page and its classic/defer scripts.
-            preload = page_file.stat().st_size
-            for tag in re.finditer(r"<script\b([^>]*)\bsrc=[\"']([^\"']+)[\"']([^>]*)>", page_html):
-                attrs = tag.group(1) + tag.group(3)
-                if re.search(r"\basync\b", attrs) or re.match(r"[a-z]+:", tag.group(2)):
+            folder = page_file.parent
+            # TurboWarp-packaged Scratch game: script.js plus a project whose assets are listed in project.json.
+            tw = 'src="script.js"' in page_html and (folder / "assets" / "project.json").is_file()
+            size = page_file.stat().st_size
+            for tag in re.finditer(r"<script\b[^>]*\bsrc=[\"']([^\"']+)[\"']", page_html):
+                src = tag.group(1)
+                if re.match(r"[a-z]+:", src) or "analytics-consent" in src:
                     continue
-                script = (repo / tag.group(2).lstrip("/")) if tag.group(2).startswith("/") else (page_file.parent / tag.group(2))
+                script = (repo / src.lstrip("/")) if src.startswith("/") else (folder / src)
                 if script.is_file():
-                    preload += script.stat().st_size
-            lazy = 0
-            folder = repo / top
-            if (folder / "script.js").is_file() and (folder / "assets" / "project.json").is_file() and url == f"/{top}/":
-                # TurboWarp-packaged Scratch game: the project's assets are fetched after the load event.
-                lazy = folder_size(folder / "assets")
-            entry.update(id=slugify(top), kind="ft", url=url, frame=[f"/{top}/", f"/{top}"], buttons=buttons,
-                         instructions=instructions, preloadBytes=preload, lazyBytes=lazy)
+                    size += script.stat().st_size
+            if tw:
+                size += folder_size(folder / "assets")
+            entry.update(id=slugify(top), kind="ft", file=file, tw=tw, buttons=buttons,
+                         instructions=find_instructions(repo, top, page_html, buttons["instr"]), bytes=size)
             if top == "suggestion_box":
                 entry["isGame"] = False
         else:
@@ -247,6 +216,10 @@ def main() -> None:
         for key, value in overrides.get(entry["id"], {}).items():
             if not key.startswith("_"):
                 entry[key] = value
+        for extra in entry.get("prefetch", []):
+            if not (repo / extra).is_file():
+                sys.exit(f"overrides.json: {entry['id']} prefetches {extra}, which is not in the checkout")
+            entry["bytes"] += (repo / extra).stat().st_size
         games.append(entry)
 
     out = {"source": "games.html", "games": games}

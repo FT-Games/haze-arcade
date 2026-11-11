@@ -1,77 +1,92 @@
-// Serves https://ftgames.xyz/* from a local checkout of the FT Games site with GitHub Pages behaviour, so the
-// tests use the exact production URLs (and the exact absolute links inside the game pages).
+// Network for the tests.
 //
-//   /foo/  -> /foo/index.html     /foo -> /foo.html, or a 301 to /foo/ for a folder     404 otherwise
-//   every response has Access-Control-Allow-Origin: * and no X-Frame-Options, like GitHub Pages.
+// By default https://raw.githubusercontent.com/FT-Games/ftgames/main/* is served from a local checkout of the FT
+// Games repository with the headers GitHub really sends (HTML, JavaScript, CSS and JSON as text/plain with nosniff,
+// images and audio with their types, everything else as application/octet-stream, CORS for everyone). With
+// { real: true } the tests use GitHub itself instead (through the session's proxy).
 //
-// Options: bytesPerSecond simulates one shared connection of that speed; offline makes every request fail.
+// Every request to the ftgames.xyz website is refused and recorded: the arcade must never need it.
+// arcade.makecode.com's player is replaced by a stub, and other sites are unreachable, as in the sandbox.
 const fs = require('fs');
 const path = require('path');
 
-const TYPES = {
-  '.html': 'text/html; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.json': 'application/json',
-  '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif',
-  '.svg': 'image/svg+xml', '.webp': 'image/webp', '.ico': 'image/x-icon', '.wav': 'audio/wav', '.mp3': 'audio/mpeg',
-  '.ogg': 'audio/ogg', '.wasm': 'application/wasm', '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf',
-  '.glb': 'model/gltf-binary', '.md': 'text/markdown', '.xml': 'application/xml', '.txt': 'text/plain',
-  '.mp4': 'video/mp4', '.track': 'application/octet-stream',
+const RAW = 'https://raw.githubusercontent.com/FT-Games/ftgames/main/';
+const GITHUB_TYPES = {
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.svg': 'image/svg+xml',
+  '.webp': 'image/webp', '.ico': 'image/x-icon', '.bmp': 'image/bmp',
+  '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.mp4': 'video/mp4',
+  '.html': 'text/plain; charset=utf-8', '.js': 'text/plain; charset=utf-8', '.json': 'text/plain; charset=utf-8',
+  '.css': 'text/plain; charset=utf-8', '.md': 'text/plain; charset=utf-8', '.txt': 'text/plain; charset=utf-8',
+  '.xml': 'text/plain; charset=utf-8', '.track': 'text/plain; charset=utf-8',
 };
-
-function resolvePath(root, urlPath) {
-  const clean = decodeURIComponent(urlPath);
-  const fsPath = path.normalize(path.join(root, clean));
-  if (!fsPath.startsWith(root)) return { status: 403 };
-  const isFile = (p) => { try { return fs.statSync(p).isFile(); } catch { return false; } };
-  const isDir = (p) => { try { return fs.statSync(p).isDirectory(); } catch { return false; } };
-  if (clean.endsWith('/')) {
-    const index = path.join(fsPath, 'index.html');
-    return isFile(index) ? { status: 200, file: index } : { status: 404 };
-  }
-  if (isFile(fsPath)) return { status: 200, file: fsPath };
-  if (isFile(fsPath + '.html')) return { status: 200, file: fsPath + '.html' };
-  if (isDir(fsPath)) return { status: 301, location: clean + '/' };
-  return { status: 404 };
-}
+const GITHUB_HEADERS = {
+  'access-control-allow-origin': '*',
+  'x-content-type-options': 'nosniff',
+  'x-frame-options': 'deny',
+  'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+  'cache-control': 'max-age=300',
+};
 
 async function install(context, root, options = {}) {
   root = path.resolve(root);
-  const stats = { requests: [], notFound: [], external: [], bytes: 0 };
-  let linkFreeAt = 0; // simulated shared connection
-  await context.route(/^https:\/\/ftgames\.xyz\//, async (route) => {
-    const url = new URL(route.request().url());
+  const stats = { github: [], site: [], external: [], notFound: [], gamesHtml: 0 };
+  let linkFreeAt = 0;
+
+  await context.route((url) => /(^|\.)ftgames\.xyz$/i.test(url.hostname), (route) => {
+    stats.site.push(route.request().url());
+    return route.abort('blockedbyclient');
+  });
+
+  if (!options.real) {
+    await context.route((url) => url.href.startsWith(RAW), async (route) => {
+      const url = new URL(route.request().url());
+      const rel = decodeURIComponent(url.pathname.slice('/FT-Games/ftgames/main/'.length));
+      stats.github.push(rel);
+      if (rel === 'games.html') stats.gamesHtml++;
+      if (options.offline) return route.abort('internetdisconnected');
+      if (options.gamesHtml && rel === 'games.html') {
+        return route.fulfill({ status: 200, headers: { ...GITHUB_HEADERS, 'content-type': 'text/plain; charset=utf-8' }, body: options.gamesHtml });
+      }
+      const file = path.normalize(path.join(root, rel));
+      let body = null;
+      try {
+        if (file.startsWith(root + path.sep) && fs.statSync(file).isFile()) body = fs.readFileSync(file);
+      } catch (e) { /* missing */ }
+      if (!body) {
+        stats.notFound.push(rel);
+        return route.fulfill({ status: 404, headers: { ...GITHUB_HEADERS, 'content-type': 'text/plain; charset=utf-8' }, body: '404: Not Found' });
+      }
+      if (options.bytesPerSecond) {
+        const now = Date.now();
+        linkFreeAt = Math.max(now, linkFreeAt) + (body.length / options.bytesPerSecond) * 1000 + 10;
+        await new Promise((resolve) => setTimeout(resolve, linkFreeAt - now));
+      }
+      const type = GITHUB_TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream';
+      return route.fulfill({ status: 200, headers: { ...GITHUB_HEADERS, 'content-type': type }, body });
+    });
+  } else {
+    // Real GitHub: only record what goes there.
+    context.on('request', (request) => {
+      const url = request.url();
+      if (url.startsWith(RAW)) {
+        stats.github.push(url.slice(RAW.length));
+        if (url === RAW + 'games.html') stats.gamesHtml++;
+      }
+    });
+  }
+
+  await context.route((url) => url.hostname === 'arcade.makecode.com' && url.pathname.startsWith('/---run'), (route) => {
     if (options.offline) return route.abort('internetdisconnected');
-    const r = resolvePath(root, url.pathname);
-    const headers = { 'access-control-allow-origin': '*', 'cache-control': 'max-age=600' };
-    stats.requests.push({ path: url.pathname, at: Date.now() });
-    if (r.status === 301) return route.fulfill({ status: 301, headers: { ...headers, location: 'https://ftgames.xyz' + r.location + url.search } });
-    if (r.status !== 200) {
-      stats.notFound.push(url.pathname);
-      return route.fulfill({ status: 404, headers: { ...headers, 'content-type': 'text/html' }, body: '<!doctype html><title>404</title><h1>404</h1>' });
-    }
-    const body = fs.readFileSync(r.file);
-    stats.bytes += body.length;
-    if (options.bytesPerSecond) {
-      const now = Date.now();
-      const start = Math.max(now, linkFreeAt);
-      linkFreeAt = start + (body.length / options.bytesPerSecond) * 1000 + 15;
-      await new Promise((resolve) => setTimeout(resolve, linkFreeAt - now));
-    }
-    return route.fulfill({ status: 200, headers: { ...headers, 'content-type': TYPES[path.extname(r.file).toLowerCase()] || 'application/octet-stream' }, body });
+    const id = new URL(route.request().url()).searchParams.get('id');
+    return route.fulfill({ status: 200, headers: { 'content-type': 'text/html' }, body: '<!doctype html><title>MakeCode stub</title><body style="background:#4b2c83;color:#fff;font:20px sans-serif"><p id="stub">MakeCode Arcade player (test stub) for ' + id + '</p></body>' });
   });
-  // The test machine has no internet: stub the two external hosts the arcade frames, abort everything else.
-  await context.route(/^https:\/\/arcade\.makecode\.com\/---run/, (route) => {
-    if (options.offline) return route.abort('internetdisconnected');
-    stats.requests.push({ path: route.request().url(), at: Date.now() });
-    return route.fulfill({ status: 200, headers: { 'content-type': 'text/html' }, body: '<!doctype html><title>MakeCode stub</title><body style="background:#4b2c83;color:#fff;font:20px sans-serif"><p id="stub">MakeCode Arcade player (test stub) for ' + new URL(route.request().url()).searchParams.get('id') + '</p></body>' });
-  });
-  await context.route((url) => {
-    const u = typeof url === 'string' ? new URL(url) : url;
-    return /^(https?|wss?):$/.test(u.protocol) && u.hostname !== 'ftgames.xyz' && !(u.hostname === 'arcade.makecode.com' && u.pathname.startsWith('/---run'));
-  }, (route) => {
-    stats.external.push(route.request().url().slice(0, 140));
-    return route.abort('internetdisconnected');
-  });
+  if (!options.real) {
+    await context.route((url) => /^(https?|wss?):$/.test(url.protocol) && url.hostname !== 'raw.githubusercontent.com' && !/(^|\.)ftgames\.xyz$/i.test(url.hostname) && url.hostname !== 'arcade.makecode.com', (route) => {
+      stats.external.push(route.request().url().slice(0, 140));
+      return route.abort('internetdisconnected');
+    });
+  }
   return stats;
 }
 
-module.exports = { install, resolvePath };
+module.exports = { install, RAW };

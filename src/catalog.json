@@ -9,20 +9,14 @@
       "href": "/platformer_game",
       "id": "platformer-game",
       "kind": "ft",
-      "url": "/platformer_game/",
-      "frame": [
-        "/platformer_game/",
-        "/platformer_game"
-      ],
+      "file": "platformer_game/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/platformer_game/instructions.html",
-      "preloadBytes": 1832191,
-      "lazyBytes": 490857,
+      "instructions": "platformer_game/instructions.html",
+      "bytes": 2317747,
       "thumb": "platformer-game.webp"
     },
     {
@@ -33,20 +27,14 @@
       "href": "/f111_game",
       "id": "f111-game",
       "kind": "ft",
-      "url": "/f111_game/",
-      "frame": [
-        "/f111_game/",
-        "/f111_game"
-      ],
+      "file": "f111_game/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/f111_game/instructions.html",
-      "preloadBytes": 1832195,
-      "lazyBytes": 521866,
+      "instructions": "f111_game/instructions.html",
+      "bytes": 2348760,
       "thumb": "f111-game.webp"
     },
     {
@@ -57,20 +45,14 @@
       "href": "/scratch_playground",
       "id": "scratch-playground",
       "kind": "ft",
-      "url": "/scratch_playground/",
-      "frame": [
-        "/scratch_playground/",
-        "/scratch_playground"
-      ],
+      "file": "scratch_playground/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/scratch_playground/instructions.html",
-      "preloadBytes": 1832201,
-      "lazyBytes": 913280,
+      "instructions": "scratch_playground/instructions.html",
+      "bytes": 2740180,
       "thumb": "scratch-playground.webp"
     },
     {
@@ -81,20 +63,14 @@
       "href": "/among-us-platformer",
       "id": "among-us-platformer",
       "kind": "ft",
-      "url": "/among-us-platformer/",
-      "frame": [
-        "/among-us-platformer/",
-        "/among-us-platformer"
-      ],
+      "file": "among-us-platformer/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/among-us-platformer/instructions.html",
-      "preloadBytes": 1827162,
-      "lazyBytes": 26184066,
+      "instructions": "among-us-platformer/instructions.html",
+      "bytes": 28011228,
       "thumb": "among-us-platformer.webp"
     },
     {
@@ -105,20 +81,14 @@
       "href": "/modern_dogfights",
       "id": "modern-dogfights",
       "kind": "ft",
-      "url": "/modern_dogfights/",
-      "frame": [
-        "/modern_dogfights/",
-        "/modern_dogfights"
-      ],
+      "file": "modern_dogfights/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/modern_dogfights/instructions.html",
-      "preloadBytes": 1832193,
-      "lazyBytes": 2406048,
+      "instructions": "modern_dogfights/instructions.html",
+      "bytes": 4232940,
       "thumb": "modern-dogfights.webp"
     },
     {
@@ -129,20 +99,14 @@
       "href": "/chess",
       "id": "chess",
       "kind": "ft",
-      "url": "/chess/",
-      "frame": [
-        "/chess/",
-        "/chess"
-      ],
+      "file": "chess/index.html",
+      "tw": false,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "block",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/chess/rules.html",
-      "preloadBytes": 39881,
-      "lazyBytes": 0,
+      "instructions": "chess/rules.html",
+      "bytes": 34580,
       "thumb": "chess.webp"
     },
     {
@@ -153,20 +117,14 @@
       "href": "/idle_gacha_roller",
       "id": "idle-gacha-roller",
       "kind": "ft",
-      "url": "/idle_gacha_roller/",
-      "frame": [
-        "/idle_gacha_roller/",
-        "/idle_gacha_roller"
-      ],
+      "file": "idle_gacha_roller/index.html",
+      "tw": false,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/idle_gacha_roller/instructions.html",
-      "preloadBytes": 52589,
-      "lazyBytes": 0,
+      "instructions": "idle_gacha_roller/instructions.html",
+      "bytes": 47288,
       "thumb": "idle-gacha-roller.webp"
     },
     {
@@ -177,20 +135,14 @@
       "href": "/farming_sim_19",
       "id": "farming-sim-19",
       "kind": "ft",
-      "url": "/farming_sim_19/",
-      "frame": [
-        "/farming_sim_19/",
-        "/farming_sim_19"
-      ],
+      "file": "farming_sim_19/index.html",
+      "tw": true,
       "buttons": {
         "home": false,
-        "instr": false,
-        "display": "block",
-        "lineHeight": "normal"
+        "instr": false
       },
       "instructions": null,
-      "preloadBytes": 1849657,
-      "lazyBytes": 399962,
+      "bytes": 2249619,
       "thumb": "farming-sim-19.webp"
     },
     {
@@ -201,20 +153,14 @@
       "href": "/snake_io",
       "id": "snake-io",
       "kind": "ft",
-      "url": "/snake_io/",
-      "frame": [
-        "/snake_io/",
-        "/snake_io"
-      ],
+      "file": "snake_io/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/snake_io/instructions.html",
-      "preloadBytes": 1855240,
-      "lazyBytes": 1003932,
+      "instructions": "snake_io/instructions.html",
+      "bytes": 2853871,
       "thumb": "snake-io.webp"
     },
     {
@@ -225,20 +171,14 @@
       "href": "/minesweeper",
       "id": "minesweeper",
       "kind": "ft",
-      "url": "/minesweeper/",
-      "frame": [
-        "/minesweeper/",
-        "/minesweeper"
-      ],
+      "file": "minesweeper/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/minesweeper/instructions.html",
-      "preloadBytes": 1832172,
-      "lazyBytes": 101401,
+      "instructions": "minesweeper/instructions.html",
+      "bytes": 1928272,
       "thumb": "minesweeper.webp"
     },
     {
@@ -249,20 +189,14 @@
       "href": "/flappy_duck",
       "id": "flappy-duck",
       "kind": "ft",
-      "url": "/flappy_duck/",
-      "frame": [
-        "/flappy_duck/",
-        "/flappy_duck"
-      ],
+      "file": "flappy_duck/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/flappy_duck/instructions.html",
-      "preloadBytes": 1855395,
-      "lazyBytes": 6184172,
+      "instructions": "flappy_duck/instructions.html",
+      "bytes": 8034266,
       "thumb": "flappy-duck.webp"
     },
     {
@@ -274,18 +208,13 @@
       "id": "vent-crawlers-beta",
       "kind": "makecode",
       "url": "https://arcade.makecode.com/---run?id=S73309-71101-76715-73171",
-      "frame": [
-        "https://arcade.makecode.com/---run"
-      ],
+      "tabUrl": "https://arcade.makecode.com/S73309-71101-76715-73171",
       "buttons": {
         "home": false,
-        "instr": false,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": false
       },
       "instructions": null,
-      "preloadBytes": 0,
-      "lazyBytes": 0,
+      "bytes": 0,
       "thumb": "vent-crawlers-beta.webp",
       "tabButton": true
     },
@@ -297,22 +226,26 @@
       "href": "/polytrack",
       "id": "polytrack",
       "kind": "ft",
-      "url": "/polytrack/",
-      "frame": [
-        "/polytrack/",
-        "/polytrack"
-      ],
+      "file": "polytrack/index.html",
+      "tw": false,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/polytrack/instructions.html",
-      "preloadBytes": 1884746,
-      "lazyBytes": 0,
+      "instructions": "polytrack/instructions.html",
+      "bytes": 2420653,
       "thumb": "polytrack.webp",
-      "open": "tab"
+      "prefetch": [
+        "polytrack/57.bundle.js",
+        "polytrack/124.bundle.js",
+        "polytrack/142.bundle.js",
+        "polytrack/168.bundle.js",
+        "polytrack/280.bundle.js",
+        "polytrack/789.bundle.js",
+        "polytrack/982.bundle.js",
+        "polytrack/simulation_worker.bundle.js",
+        "polytrack/lib/polytrack_physics.js"
+      ]
     },
     {
       "title": "Minecraft Classic",
@@ -322,22 +255,17 @@
       "href": "/minecraft_classic",
       "id": "minecraft-classic",
       "kind": "ft",
-      "url": "/minecraft_classic/",
-      "frame": [
-        "/minecraft_classic/",
-        "/minecraft_classic"
-      ],
+      "file": "minecraft_classic/index.html",
+      "tw": false,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/minecraft_classic/instructions.html",
-      "preloadBytes": 10237,
-      "lazyBytes": 0,
+      "instructions": "minecraft_classic/instructions.html",
+      "bytes": 4936,
       "thumb": "minecraft-classic.webp",
-      "tabButton": true
+      "tabButton": true,
+      "tabUrl": "https://classic.minecraft.net"
     },
     {
       "title": "Arrow Battles",
@@ -348,18 +276,13 @@
       "id": "arrow-battles",
       "kind": "makecode",
       "url": "https://arcade.makecode.com/---run?id=S05292-48817-56543-81346",
-      "frame": [
-        "https://arcade.makecode.com/---run"
-      ],
+      "tabUrl": "https://arcade.makecode.com/S05292-48817-56543-81346",
       "buttons": {
         "home": false,
-        "instr": false,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": false
       },
       "instructions": null,
-      "preloadBytes": 0,
-      "lazyBytes": 0,
+      "bytes": 0,
       "thumb": "arrow-battles.webp",
       "tabButton": true
     },
@@ -371,20 +294,14 @@
       "href": "/block_blast",
       "id": "block-blast",
       "kind": "ft",
-      "url": "/block_blast/",
-      "frame": [
-        "/block_blast/",
-        "/block_blast"
-      ],
+      "file": "block_blast/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/block_blast/instructions.html",
-      "preloadBytes": 1831055,
-      "lazyBytes": 2489257,
+      "instructions": "block_blast/instructions.html",
+      "bytes": 4315011,
       "thumb": "block-blast.webp"
     },
     {
@@ -395,20 +312,14 @@
       "href": "/crossy_road",
       "id": "crossy-road",
       "kind": "ft",
-      "url": "/crossy_road/",
-      "frame": [
-        "/crossy_road/",
-        "/crossy_road"
-      ],
+      "file": "crossy_road/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "block",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/crossy_road/instructions.html",
-      "preloadBytes": 1832056,
-      "lazyBytes": 20532073,
+      "instructions": "crossy_road/instructions.html",
+      "bytes": 22358828,
       "thumb": "crossy-road.webp"
     },
     {
@@ -419,20 +330,14 @@
       "href": "/tetris",
       "id": "tetris",
       "kind": "ft",
-      "url": "/tetris/",
-      "frame": [
-        "/tetris/",
-        "/tetris"
-      ],
+      "file": "tetris/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/tetris/instructions.html",
-      "preloadBytes": 1832169,
-      "lazyBytes": 18817218,
+      "instructions": "tetris/instructions.html",
+      "bytes": 20644086,
       "thumb": "tetris.webp"
     },
     {
@@ -443,20 +348,14 @@
       "href": "/flappy_dunk",
       "id": "flappy-dunk",
       "kind": "ft",
-      "url": "/flappy_dunk/",
-      "frame": [
-        "/flappy_dunk/",
-        "/flappy_dunk"
-      ],
+      "file": "flappy_dunk/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/flappy_dunk/instructions.html",
-      "preloadBytes": 1832199,
-      "lazyBytes": 2366480,
+      "instructions": "flappy_dunk/instructions.html",
+      "bytes": 4193378,
       "thumb": "flappy-dunk.webp"
     },
     {
@@ -467,20 +366,14 @@
       "href": "/money_mines",
       "id": "money-mines",
       "kind": "ft",
-      "url": "/money_mines/",
-      "frame": [
-        "/money_mines/",
-        "/money_mines"
-      ],
+      "file": "money_mines/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/money_mines/instructions.html",
-      "preloadBytes": 1832205,
-      "lazyBytes": 1120550,
+      "instructions": "money_mines/instructions.html",
+      "bytes": 2947454,
       "thumb": "money-mines.webp"
     },
     {
@@ -491,20 +384,14 @@
       "href": "/space_invaders",
       "id": "space-invaders",
       "kind": "ft",
-      "url": "/space_invaders/",
-      "frame": [
-        "/space_invaders/",
-        "/space_invaders"
-      ],
+      "file": "space_invaders/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/space_invaders/instructions.html",
-      "preloadBytes": 1832188,
-      "lazyBytes": 546746,
+      "instructions": "space_invaders/instructions.html",
+      "bytes": 2373633,
       "thumb": "space-invaders.webp"
     },
     {
@@ -515,20 +402,14 @@
       "href": "/retro_pong",
       "id": "retro-pong",
       "kind": "ft",
-      "url": "/retro_pong/",
-      "frame": [
-        "/retro_pong/",
-        "/retro_pong"
-      ],
+      "file": "retro_pong/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/retro_pong/instructions.html",
-      "preloadBytes": 1831900,
-      "lazyBytes": 187658,
+      "instructions": "retro_pong/instructions.html",
+      "bytes": 2014257,
       "thumb": "retro-pong.webp"
     },
     {
@@ -539,20 +420,14 @@
       "href": "/pacific_dogfights",
       "id": "pacific-dogfights",
       "kind": "ft",
-      "url": "/pacific_dogfights/",
-      "frame": [
-        "/pacific_dogfights/",
-        "/pacific_dogfights"
-      ],
+      "file": "pacific_dogfights/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/pacific_dogfights/instructions.html",
-      "preloadBytes": 1832209,
-      "lazyBytes": 18567685,
+      "instructions": "pacific_dogfights/instructions.html",
+      "bytes": 20394593,
       "thumb": "pacific-dogfights.webp"
     },
     {
@@ -563,20 +438,14 @@
       "href": "/pac_man_platformer",
       "id": "pac-man-platformer",
       "kind": "ft",
-      "url": "/pac_man_platformer/",
-      "frame": [
-        "/pac_man_platformer/",
-        "/pac_man_platformer"
-      ],
+      "file": "pac_man_platformer/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/pac_man_platformer/instructions.html",
-      "preloadBytes": 1831085,
-      "lazyBytes": 17154775,
+      "instructions": "pac_man_platformer/instructions.html",
+      "bytes": 18980559,
       "thumb": "pac-man-platformer.webp"
     },
     {
@@ -587,20 +456,14 @@
       "href": "/2d_platformer/instructions",
       "id": "2d-platformer",
       "kind": "ft",
-      "url": "/2d_platformer/instructions.html",
-      "frame": [
-        "/2d_platformer/",
-        "/2d_platformer"
-      ],
+      "file": "2d_platformer/instructions.html",
+      "tw": false,
       "buttons": {
         "home": true,
-        "instr": false,
-        "display": "flex",
-        "lineHeight": "1"
+        "instr": false
       },
       "instructions": null,
-      "preloadBytes": 8784,
-      "lazyBytes": 0,
+      "bytes": 3483,
       "thumb": "2d-platformer.webp"
     },
     {
@@ -611,20 +474,14 @@
       "href": "/wow",
       "id": "wow",
       "kind": "ft",
-      "url": "/wow/",
-      "frame": [
-        "/wow/",
-        "/wow"
-      ],
+      "file": "wow/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/wow/instructions.html",
-      "preloadBytes": 1855404,
-      "lazyBytes": 9001741,
+      "instructions": "wow/instructions.html",
+      "bytes": 10851844,
       "thumb": "wow.webp"
     },
     {
@@ -635,20 +492,14 @@
       "href": "/tiny_shop_owner",
       "id": "tiny-shop-owner",
       "kind": "ft",
-      "url": "/tiny_shop_owner/",
-      "frame": [
-        "/tiny_shop_owner/",
-        "/tiny_shop_owner"
-      ],
+      "file": "tiny_shop_owner/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/tiny_shop_owner/instructions.html",
-      "preloadBytes": 1855546,
-      "lazyBytes": 1033817,
+      "instructions": "tiny_shop_owner/instructions.html",
+      "bytes": 2884062,
       "thumb": "tiny-shop-owner.webp"
     },
     {
@@ -659,20 +510,14 @@
       "href": "/paper_minecraft",
       "id": "paper-minecraft",
       "kind": "ft",
-      "url": "/paper_minecraft/",
-      "frame": [
-        "/paper_minecraft/",
-        "/paper_minecraft"
-      ],
+      "file": "paper_minecraft/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/paper_minecraft/instructions.html",
-      "preloadBytes": 1856285,
-      "lazyBytes": 7897160,
+      "instructions": "paper_minecraft/instructions.html",
+      "bytes": 9748144,
       "thumb": "paper-minecraft.webp"
     },
     {
@@ -683,20 +528,14 @@
       "href": "/brain_test",
       "id": "brain-test",
       "kind": "ft",
-      "url": "/brain_test/",
-      "frame": [
-        "/brain_test/",
-        "/brain_test"
-      ],
+      "file": "brain_test/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/brain_test/instructions.html",
-      "preloadBytes": 1850153,
-      "lazyBytes": 32827377,
+      "instructions": "brain_test/instructions.html",
+      "bytes": 34677530,
       "thumb": "brain-test.webp"
     },
     {
@@ -707,20 +546,14 @@
       "href": "/ragdoll_archers",
       "id": "ragdoll-archers",
       "kind": "ft",
-      "url": "/ragdoll_archers/",
-      "frame": [
-        "/ragdoll_archers/",
-        "/ragdoll_archers"
-      ],
+      "file": "ragdoll_archers/index.html",
+      "tw": true,
       "buttons": {
         "home": true,
-        "instr": true,
-        "display": "flex",
-        "lineHeight": "normal"
+        "instr": true
       },
-      "instructions": "/ragdoll_archers/instructions.html",
-      "preloadBytes": 1850197,
-      "lazyBytes": 1803143,
+      "instructions": "ragdoll_archers/instructions.html",
+      "bytes": 3653340,
       "thumb": "ragdoll-archers.webp"
     },
     {
@@ -731,23 +564,18 @@
       "href": "/suggestion_box",
       "id": "suggestion-box",
       "kind": "ft",
-      "url": "/suggestion_box",
-      "frame": [
-        "/suggestion_box/",
-        "/suggestion_box"
-      ],
+      "file": "suggestion_box.html",
+      "tw": false,
       "buttons": {
-        "home": false,
-        "instr": false,
-        "display": "block",
-        "lineHeight": "normal"
+        "home": true,
+        "instr": false
       },
       "instructions": null,
-      "preloadBytes": 6667,
-      "lazyBytes": 0,
+      "bytes": 1366,
       "isGame": false,
       "thumb": "suggestion-box.webp",
-      "tabButton": true
+      "tabButton": true,
+      "tabUrl": "https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAYAADQ8dm5UREtUQjk2S0JGQ0xYQTZHNjFPQzhONUZPUC4u"
     }
   ]
 }
