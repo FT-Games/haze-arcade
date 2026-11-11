@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src"
 DIST = ROOT / "dist"
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 EXTENSION_ID = "ftgames.haze-arcade"
 PAGE_TERMINATOR = "HAZE_ARCADE_PAGE"
 ICON_TERMINATOR = "HAZE_ARCADE_ICON"

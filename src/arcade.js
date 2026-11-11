@@ -339,11 +339,13 @@
   // Moves the bar from `from` to `to` as source() goes from 0 to 1, until `until` settles (or the run is cancelled).
   async function drive(n, from, to, source, until) {
     let settled = false;
-    until.then(() => { settled = true; }, () => { settled = true; });
+    let succeeded = false;
+    until.then(() => { settled = true; succeeded = true; }, () => { settled = true; });
     while (!settled && alive(n)) {
       loader.progress(from + (to - from) * clamp(source(), 0, 1));
       await sleep(100);
     }
+    if (succeeded && alive(n)) loader.progress(to); // a step that has finished shows as finished
   }
 
   const creep = (ms) => {
@@ -521,7 +523,7 @@
       }
     };
     var isSite = function (url) {
-      return /^https?:\/\/(www\.)?ftgames\.xyz(\/|$)/i.test(url) || url.indexOf(C.repo + '/') === 0;
+      return /^https?:\/\/((www\.)?ftgames\.xyz|raw\.githubusercontent\.com)(\/|[?#]|$)/i.test(url);
     };
 
     // Storage and cookies: an extension page has none, so the arcade keeps them for the PhantomHaze session.
@@ -674,6 +676,7 @@
       }
       B.leave(abs(text), C.mode);
     };
+    var nativeOpen = W.open;
     var nav = { assign: leave, replace: leave, reload: function () { location.reload(); } };
     define(nav, 'href', { get: function () { return location.href; }, set: leave });
     W.__hazeNav = nav;
@@ -688,17 +691,28 @@
         B.instructions(C.instructions);
         return;
       }
-      if (target.tagName !== 'A') return;
+      if (target.tagName !== 'A' || target.hasAttribute('download')) return; // downloads (saved games) work as usual
       var href = target.getAttribute('href') || '';
       if (!href || /^\s*(#|javascript:)/i.test(href)) return;
       var url = abs(href);
-      if (/^_(blank|new)$/i.test(target.getAttribute('target') || '') && !isSite(url)) return; // PhantomHaze opens another site in a tab
+      if (!/^https?:/i.test(url)) return; // blob:, data:, mailto: ...
+      var newWindow = /^_(blank|new)$/i.test(target.getAttribute('target') || '');
+      if (!isSite(url)) {
+        if (newWindow) return; // PhantomHaze opens another website in a new tab
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        nativeOpen.call(W, url, '_blank'); // the game stays; the website opens in a new PhantomHaze tab
+        return;
+      }
       event.preventDefault();
       event.stopImmediatePropagation();
       leave(url);
     }, true);
-    D.addEventListener('submit', function (event) { event.preventDefault(); }, true);
-    var nativeOpen = W.open;
+    D.addEventListener('submit', function (event) {
+      var form = event.target;
+      if (form && String(form.getAttribute('method') || '').toLowerCase() === 'dialog') return; // closes a <dialog>
+      event.preventDefault();
+    }, true);
     W.open = function (url) {
       var target = url ? abs(url) : '';
       if (target && isSite(target)) {
@@ -1100,17 +1114,23 @@
     });
   }
 
-  function placeButtons(g, frame) {
-    const ownHome = !!(g.buttons && g.buttons.home); // the page's own Home works (the compatibility layer catches it)
-    $('homeBtn').hidden = ownHome;
-    $('tabBtn').hidden = !g.tabButton;
-    if (!g.tabButton) return;
-    let right = 10 + (ownHome ? 0 : $('homeBtn').offsetWidth + 10);
+  // The page's own way back to the games page, if it has one (the compatibility layer turns it into the arcade's).
+  function pageHome(frame) {
     try {
       const d = frame && frame.contentDocument;
-      const home = d && (d.getElementById('homeButton') || d.querySelector('a[href*="ftgames.xyz/games"], a[href="/games"], a[href="/"]'));
-      if (home) right = Math.max(right, Math.round(window.innerWidth - home.getBoundingClientRect().left + 10));
-    } catch (e) { /* keep the default spot */ }
+      return (d && (d.getElementById('homeButton') || d.querySelector('a[href*="ftgames.xyz/games"], a[href="/games"], a[href="/"]'))) || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function placeButtons(g, frame) {
+    const home = g.kind === 'makecode' ? null : pageHome(frame);
+    $('homeBtn').hidden = !!home;
+    $('tabBtn').hidden = !g.tabButton;
+    if (!g.tabButton) return;
+    let right = 10 + (home ? 0 : $('homeBtn').offsetWidth + 10);
+    if (home) right = Math.max(right, Math.round(window.innerWidth - home.getBoundingClientRect().left + 10));
     $('tabBtn').style.right = right + 'px';
   }
 
