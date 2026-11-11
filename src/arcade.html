@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  Haze Arcade - the FT Games library inside PhantomHaze.
+  @@BUILD_INFO@@
+  The page runs as a PhantomHaze extension page (WebView2 NavigateToString, so it has an opaque origin and no
+  storage). Games are not copied into the extension: each one is loaded from the FT Games site in a sandboxed
+  frame, so it behaves exactly as it does on ftgames.xyz.
+  Fonts: "HazeNeon" is a subset of Monoton (Vernon Adams) and "HazePixel" a subset of Press Start 2P
+  (The Press Start 2P Project Authors), both under the SIL Open Font License 1.1 and renamed as the licence asks.
+-->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob: https: http:; font-src data:; connect-src https: http:; frame-src https: http:; base-uri 'none'; form-action 'none'">
+<meta name="haze-server" content="{{setting.server}}">
+<meta name="haze-hold" content="{{setting.holdSeconds}}">
+<meta name="haze-live" content="{{setting.liveList}}">
+<title>Haze Arcade</title>
+<style>
+@font-face { font-family: "HazeNeon"; src: url(data:font/woff2;base64,@@FONT_NEON@@) format("woff2"); font-display: block; }
+@font-face { font-family: "HazePixel"; src: url(data:font/woff2;base64,@@FONT_PIXEL@@) format("woff2"); font-display: block; }
+
+:root {
+  --bg: #07020f;
+  --pink: #ff2bd6;
+  --cyan: #00e5ff;
+  --green: #00ff99;
+  --yellow: #ffe14d;
+  --text: #f3ecff;
+  --muted: #b8a8d4;
+  --line: rgba(255, 255, 255, .09);
+  --ui: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --pixel: "HazePixel", "Courier New", monospace;
+  --neon: "HazeNeon", "HazePixel", Impact, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--bg); color: var(--text); font-family: var(--ui); overflow: hidden; }
+[hidden] { display: none !important; }
+button { font: inherit; color: inherit; }
+
+/* ---------- games page ---------- */
+#home {
+  position: fixed; inset: 0; overflow-y: auto; overflow-x: hidden;
+  background:
+    radial-gradient(1100px 520px at 50% -12%, rgba(255, 43, 214, .20), transparent 62%),
+    radial-gradient(800px 460px at 100% 0%, rgba(0, 229, 255, .12), transparent 60%),
+    linear-gradient(180deg, #0c0319 0%, #07020f 55%);
+}
+#home.away { visibility: hidden; }
+#home::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(255, 255, 255, .03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .03) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 75%); mask-image: linear-gradient(180deg, #000 0%, transparent 75%);
+}
+.topbar {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 14px 28px;
+  padding: 14px 28px;
+  background: rgba(8, 2, 18, .84); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 43, 214, .28);
+  box-shadow: 0 1px 0 rgba(0, 229, 255, .14), 0 10px 30px rgba(0, 0, 0, .35);
+}
+.brand { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
+.brand-haze { font-family: var(--neon); font-size: 42px; line-height: 1; color: #ffeafb; text-shadow: 0 0 2px #fff, 0 0 8px var(--pink), 0 0 18px var(--pink), 0 0 34px var(--pink); }
+.brand-arcade { font-family: var(--pixel); font-size: 16px; letter-spacing: 4px; color: #e8fdff; text-shadow: 0 0 2px #fff, 0 0 8px var(--cyan), 0 0 18px var(--cyan); }
+.brand-by { font-size: 12.5px; color: var(--muted); border-left: 1px solid var(--line); padding-left: 14px; line-height: 1.35; }
+.brand-by b { color: var(--text); font-weight: 600; }
+.filters { margin-left: auto; display: flex; flex-wrap: wrap; gap: 10px; }
+.filters input, .filters select {
+  height: 40px; border-radius: 12px; border: 1px solid rgba(0, 229, 255, .32);
+  background: rgba(12, 5, 28, .92); color: var(--text); padding: 0 14px; font: 14px var(--ui); outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.filters input { width: 250px; }
+.filters select { padding-right: 8px; cursor: pointer; }
+.filters input:focus, .filters select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0, 229, 255, .16), 0 0 18px rgba(0, 229, 255, .25); }
+.filters input::placeholder { color: #8f7fb0; }
+main { position: relative; max-width: 1440px; margin: 0 auto; padding: 18px 28px 30px; }
+.notice {
+  margin: 8px 0 4px; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.45;
+  border: 1px solid rgba(255, 225, 77, .45); background: rgba(255, 225, 77, .08); color: #fff3c4;
+}
+.section-title {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--pixel); font-size: 13px; letter-spacing: 2px; color: var(--yellow);
+  text-shadow: 0 0 8px rgba(255, 225, 77, .55); margin: 22px 0 14px;
+}
+.section-title::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255, 225, 77, .45), transparent); }
+.section-title .count { color: var(--muted); text-shadow: none; }
+.tip { margin: 16px 0 0; font-size: 13.5px; color: var(--muted); }
+.grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.empty { margin: 26px 0; text-align: center; color: var(--muted); font-size: 15px; }
+
+.card {
+  position: relative; border-radius: 18px; overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .065), rgba(255, 255, 255, .03));
+  border: 1px solid var(--line);
+  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.card:hover, .card:focus-within {
+  transform: translateY(-6px); border-color: transparent;
+  box-shadow: 0 0 0 2px rgba(0, 229, 255, .75), 0 0 22px rgba(0, 229, 255, .35), 0 0 46px rgba(255, 43, 214, .22), 0 14px 30px rgba(0, 0, 0, .45);
+}
+.play { display: block; width: 100%; padding: 0; margin: 0; border: 0; background: none; text-align: left; cursor: pointer; outline: none; }
+.thumb { position: relative; height: 160px; overflow: hidden; background: #12062a; }
+.thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease, filter .35s ease; }
+.card:hover .thumb img { transform: scale(1.06); filter: brightness(1.08) saturate(1.1); }
+.thumb .ph {
+  position: absolute; inset: 0; display: grid; place-items: center; padding: 18px; text-align: center;
+  font-family: var(--pixel); font-size: 14px; line-height: 1.7; color: #fff; text-shadow: 0 0 10px var(--pink);
+  background:
+    radial-gradient(circle at 25% 20%, rgba(255, 43, 214, .45), transparent 55%),
+    radial-gradient(circle at 80% 85%, rgba(0, 229, 255, .35), transparent 55%), #14062c;
+}
+.thumb .badge {
+  position: absolute; right: 10px; bottom: 10px; padding: 4px 8px; border-radius: 8px;
+  font-family: var(--pixel); font-size: 9px; letter-spacing: 1px; color: #fff; background: rgba(8, 2, 18, .78); border: 1px solid rgba(255, 255, 255, .25);
+}
+.card-body { padding: 14px 16px 16px; }
+.card-title { margin: 0 0 6px; font-size: 18px; font-weight: 700; line-height: 1.25; color: var(--text); transition: color .25s, text-shadow .25s; }
+.card:hover .card-title { color: #fff; text-shadow: 0 0 10px rgba(0, 229, 255, .65); }
+.card-desc {
+  margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--muted);
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; }
+.tag { font-size: 11.5px; line-height: 1; padding: 5px 9px; border-radius: 999px; border: 1px solid; }
+.tag.genre { color: #a6f7ff; border-color: rgba(0, 229, 255, .42); background: rgba(0, 229, 255, .08); }
+.tag.easy { color: #93ffd0; border-color: rgba(0, 255, 153, .42); background: rgba(0, 255, 153, .08); }
+.tag.medium { color: #ffeaa6; border-color: rgba(255, 225, 77, .42); background: rgba(255, 225, 77, .08); }
+.tag.hard { color: #ffb3c9; border-color: rgba(255, 64, 129, .48); background: rgba(255, 64, 129, .1); }
+.tag.other { color: #e3ccff; border-color: rgba(200, 160, 255, .42); background: rgba(200, 160, 255, .08); }
+.fav {
+  position: absolute; top: 10px; left: 10px; z-index: 2; width: 36px; height: 36px; padding: 0;
+  display: grid; place-items: center; border-radius: 50%; cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, .28); background: rgba(10, 4, 24, .74); color: #fff;
+  font-size: 19px; line-height: 1; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  transition: transform .2s, border-color .2s, color .2s;
+}
+.fav:hover { transform: scale(1.1); border-color: var(--yellow); }
+.fav.on { color: var(--yellow); border-color: rgba(255, 225, 77, .85); text-shadow: 0 0 10px rgba(255, 225, 77, .9); }
+.card.burst { animation: burst .6s ease-out; }
+@keyframes burst { 40% { box-shadow: 0 0 0 3px rgba(255, 225, 77, .9), 0 0 40px rgba(255, 225, 77, .6); } }
+.play:focus-visible { box-shadow: inset 0 0 0 3px var(--cyan); border-radius: 18px; }
+footer { padding: 6px 28px 28px; text-align: center; font-size: 12.5px; color: #8a7aa8; }
+footer a { color: inherit; }
+
+/* ---------- game player ---------- */
+#stage { position: fixed; inset: 0; z-index: 10; background: #000; }
+#stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: #000; }
+/* A copy of the FT Games "Home" / "Instructions" buttons, drawn exactly over the page's own ones. */
+.ft-btn {
+  position: fixed; top: 10px; z-index: 20; margin: 0; box-sizing: content-box;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 18px; border: 2px solid #00e5ff; border-radius: 14px;
+  background: rgba(20, 20, 30, .92); color: #fff;
+  font: 700 15px Arial, sans-serif; letter-spacing: normal; text-align: center; white-space: nowrap;
+  box-shadow: 0 0 10px rgba(0, 229, 255, .35), inset 0 0 8px rgba(0, 229, 255, .15);
+  transition: .25s ease; cursor: pointer; user-select: none; -webkit-user-select: none; outline: none;
+}
+/* Pages differ slightly: most draw an inline-flex button whose "font: ... !important" leaves the line height at
+   normal (42px tall); some use display:block, the 2D Platformer page really gets line-height:1 (39px tall). */
+.ft-btn.block { display: block; }
+.ft-btn.tight { line-height: 1; }
+.ft-btn:hover, .ft-btn:focus-visible { background: linear-gradient(90deg, #00e5ff, #00ff99); color: #000; box-shadow: 0 0 18px rgba(0, 255, 170, .45); }
+#homeBtn { right: 10px; }
+#instrBtn { left: 10px; }
+#tabBtn { right: 130px; }
+.toast {
+  position: fixed; left: 50%; bottom: 22px; z-index: 6; transform: translateX(-50%); max-width: min(640px, 92vw);
+  padding: 12px 18px; border-radius: 12px; font-size: 14px; line-height: 1.45; text-align: center;
+  background: rgba(14, 5, 30, .94); border: 1px solid rgba(0, 229, 255, .55); box-shadow: 0 0 18px rgba(0, 229, 255, .3);
+}
+
+/* ---------- instructions ---------- */
+#instr { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; background: rgba(4, 1, 10, .72); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.instr-panel {
+  width: min(860px, 94vw); height: min(680px, 90vh); display: flex; flex-direction: column; overflow: hidden;
+  border-radius: 18px; border: 2px solid var(--cyan); background: #0f0f12;
+  box-shadow: 0 0 24px rgba(0, 229, 255, .45), 0 0 70px rgba(255, 43, 214, .22);
+}
+.instr-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px 10px 18px;
+  background: #0b0518; border-bottom: 1px solid rgba(0, 229, 255, .35);
+  font-family: var(--pixel); font-size: 11px; letter-spacing: 2px; color: var(--cyan); text-shadow: 0 0 8px rgba(0, 229, 255, .6);
+}
+.instr-head span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.6; }
+.instr-body { position: relative; flex: 1; background: #0f0f12; }
+.instr-body iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+.neon-btn {
+  padding: 10px 16px; border-radius: 10px; cursor: pointer; white-space: nowrap;
+  font-family: var(--pixel); font-size: 11px; letter-spacing: 1px; color: #fff;
+  background: rgba(14, 5, 30, .9); border: 2px solid var(--pink);
+  box-shadow: 0 0 10px rgba(255, 43, 214, .45), inset 0 0 8px rgba(255, 43, 214, .2);
+  transition: background .2s, color .2s, box-shadow .2s;
+}
+.neon-btn:hover, .neon-btn:focus-visible { outline: none; background: var(--pink); color: #14002b; box-shadow: 0 0 20px rgba(255, 43, 214, .75); }
+.neon-btn.cyan { border-color: var(--cyan); box-shadow: 0 0 10px rgba(0, 229, 255, .45), inset 0 0 8px rgba(0, 229, 255, .2); }
+.neon-btn.cyan:hover, .neon-btn.cyan:focus-visible { background: var(--cyan); color: #00151a; box-shadow: 0 0 20px rgba(0, 229, 255, .75); }
+
+/* ---------- loading screen ---------- */
+#loader {
+  position: fixed; inset: 0; z-index: 100; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px;
+  background: radial-gradient(ellipse at 50% 36%, #2c0b52 0%, #12031f 44%, #05010c 78%);
+  transition: opacity .45s ease, visibility .45s ease;
+}
+#loader.out { opacity: 0; visibility: hidden; pointer-events: none; }
+.ld-sun {
+  position: absolute; left: 50%; top: 9%; width: min(52vmin, 460px); aspect-ratio: 1; transform: translateX(-50%);
+  border-radius: 50%; opacity: .26;
+  background: linear-gradient(180deg, #ffe14d 0%, #ff8a3d 38%, #ff2bd6 78%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0 52%, transparent 52% 56%, #000 56% 63%, transparent 63% 68%, #000 68% 74%, transparent 74% 80%, #000 80% 85%, transparent 85% 91%, #000 91%);
+  mask-image: linear-gradient(180deg, #000 0 52%, transparent 52% 56%, #000 56% 63%, transparent 63% 68%, #000 68% 74%, transparent 74% 80%, #000 80% 85%, transparent 85% 91%, #000 91%);
+}
+.ld-floor {
+  position: absolute; left: -50%; right: -50%; bottom: -8%; height: 52%;
+  background-image: linear-gradient(rgba(255, 43, 214, .6) 2px, transparent 2px), linear-gradient(90deg, rgba(255, 43, 214, .6) 2px, transparent 2px);
+  background-size: 64px 64px; transform: perspective(300px) rotateX(64deg); transform-origin: 50% 0;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 40%); mask-image: linear-gradient(180deg, transparent 0%, #000 40%);
+  opacity: .5; animation: floor 1.1s linear infinite;
+}
+@keyframes floor { to { background-position: 0 64px; } }
+.ld-scan {
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(180deg, rgba(0, 0, 0, .22) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .65) 100%);
+}
+.ld-logo { position: relative; display: flex; flex-direction: column; align-items: center; margin-bottom: 8px; }
+.ld-haze {
+  font-family: var(--neon); font-size: clamp(64px, 13vw, 172px); line-height: 1; color: #ffe9fb;
+  text-shadow: 0 0 3px #fff, 0 0 10px var(--pink), 0 0 22px var(--pink), 0 0 46px var(--pink), 0 0 92px var(--pink);
+  animation: flicker 7s infinite;
+}
+.ld-arcade {
+  font-family: var(--pixel); font-size: clamp(22px, 4.4vw, 56px); letter-spacing: .32em; margin-right: -.32em; margin-top: clamp(8px, 1.6vw, 20px);
+  color: #e6fdff; text-shadow: 0 0 3px #fff, 0 0 10px var(--cyan), 0 0 22px var(--cyan), 0 0 46px var(--cyan);
+  animation: flicker2 9s infinite;
+}
+@keyframes flicker {
+  0%, 15%, 17%, 19%, 61%, 63%, 100% { opacity: 1; }
+  16%, 18% { opacity: .45; text-shadow: 0 0 2px #fff, 0 0 6px var(--pink); }
+  62% { opacity: .7; }
+}
+@keyframes flicker2 {
+  0%, 40%, 42%, 100% { opacity: 1; }
+  41% { opacity: .5; text-shadow: 0 0 2px #fff, 0 0 6px var(--cyan); }
+}
+.ld-now { position: relative; font-family: var(--pixel); font-size: 12px; letter-spacing: 3px; color: var(--yellow); text-shadow: 0 0 8px rgba(255, 225, 77, .7); }
+.ld-title {
+  position: relative; max-width: 90vw; text-align: center; line-height: 1.5;
+  font-family: var(--pixel); font-size: clamp(14px, 2vw, 20px); color: #fff; text-shadow: 0 0 10px rgba(255, 255, 255, .45);
+}
+.ld-bar {
+  position: relative; width: min(440px, 80vw); height: 24px; padding: 3px; margin-top: 4px;
+  border: 2px solid var(--cyan); border-radius: 4px; background: rgba(0, 0, 0, .35);
+  box-shadow: 0 0 12px rgba(0, 229, 255, .55), inset 0 0 8px rgba(0, 229, 255, .25);
+}
+.ld-fill {
+  height: 100%; width: 0%;
+  background: repeating-linear-gradient(90deg, var(--cyan) 0 10px, transparent 10px 14px);
+  filter: drop-shadow(0 0 4px rgba(0, 229, 255, .9));
+  transition: width .2s linear;
+}
+.ld-bar.full .ld-fill { animation: pulse .8s ease-in-out infinite alternate; }
+@keyframes pulse { to { filter: drop-shadow(0 0 9px rgba(0, 255, 153, 1)); background: repeating-linear-gradient(90deg, var(--green) 0 10px, transparent 10px 14px); } }
+.ld-status { position: relative; min-height: 14px; font-family: var(--pixel); font-size: 12px; letter-spacing: 2px; color: #fff; text-align: center; line-height: 1.6; }
+.ld-status.error { color: #ff7ab8; text-shadow: 0 0 8px rgba(255, 43, 214, .7); }
+.ld-detail { position: relative; max-width: 560px; text-align: center; font-size: 14px; line-height: 1.5; color: #e3d7f7; }
+.blink { animation: blink 1.1s steps(2, start) infinite; }
+@keyframes blink { to { visibility: hidden; } }
+.ld-actions { position: relative; display: flex; gap: 12px; margin-top: 6px; }
+.ld-tip { position: absolute; left: 0; right: 0; bottom: 22px; padding: 0 20px; text-align: center; font-size: 13px; color: #a998c7; }
+@media (prefers-reduced-motion: reduce) {
+  .ld-haze, .ld-arcade, .ld-floor, .blink, .ld-bar.full .ld-fill { animation: none; }
+  .card, .card:hover, .thumb img { transition: none; transform: none; }
+}
+@media (max-width: 760px) {
+  .topbar { padding: 12px 16px; }
+  main { padding: 14px 16px 24px; }
+  .filters { margin-left: 0; width: 100%; }
+  .filters input { flex: 1; width: auto; min-width: 0; }
+  .brand-by { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="home" class="away" inert>
+  <header class="topbar">
+    <div class="brand" aria-label="Haze Arcade">
+      <span class="brand-haze">HAZE</span><span class="brand-arcade">ARCADE</span>
+      <span class="brand-by">games by <b>FT Games</b><br>ftgames.xyz</span>
+    </div>
+    <div class="filters" role="search">
+      <input id="search" type="search" placeholder="Search games..." aria-label="Search games by title or description" autocomplete="off" spellcheck="false">
+      <select id="genre" aria-label="Filter by genre"><option value="">All genres</option></select>
+      <select id="difficulty" aria-label="Filter by difficulty"><option value="">All difficulties</option></select>
+    </div>
+  </header>
+  <main>
+    <div id="notice" class="notice" hidden></div>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <section id="favSection" hidden aria-label="Your favourites">
+      <h2 class="section-title">&#9733; YOUR FAVORITES &#9733;</h2>
+      <div id="favGrid" class="grid"></div>
+    </section>
+    <p id="favTip" class="tip">&#128161; TIP: Click the &#9734; on a game to favourite it for easy access!</p>
+    <section aria-label="Games">
+      <h2 class="section-title">ALL GAMES <span id="count" class="count"></span></h2>
+      <div id="grid" class="grid"></div>
+      <p id="empty" class="empty" hidden>No games match your search or filters.</p>
+    </section>
+  </main>
+  <footer>Games by FT Games (ftgames.xyz). Haze Arcade v{{extension.version}} for PhantomHaze.</footer>
+</div>
+
+<div id="stage" hidden>
+  <div id="frameHost"></div>
+  <button id="homeBtn" class="ft-btn" type="button" title="Back to the Haze Arcade games page">&#x1F3E0; Home</button>
+  <button id="instrBtn" class="ft-btn" type="button" hidden>&#x1F4D6; Instructions</button>
+  <button id="tabBtn" class="ft-btn" type="button" hidden title="Trouble playing here? Open this game in a new PhantomHaze tab">&#8599; Tab</button>
+</div>
+
+<div id="instr" hidden role="dialog" aria-modal="true" aria-labelledby="instrTitle">
+  <div class="instr-panel">
+    <div class="instr-head"><span id="instrTitle">INSTRUCTIONS</span><button id="instrClose" class="neon-btn cyan" type="button">&#10005; CLOSE</button></div>
+    <div id="instrHost" class="instr-body"></div>
+  </div>
+</div>
+
+<div id="loader" role="status" aria-live="polite">
+  <div class="ld-sun"></div>
+  <div class="ld-floor"></div>
+  <div class="ld-logo" aria-label="Haze Arcade">
+    <div class="ld-haze">HAZE</div>
+    <div class="ld-arcade">ARCADE</div>
+  </div>
+  <div id="ldNow" class="ld-now">LOADING</div>
+  <div id="ldTitle" class="ld-title">GAMES LIBRARY</div>
+  <div id="ldBar" class="ld-bar"><div id="ldFill" class="ld-fill"></div></div>
+  <div id="ldStatus" class="ld-status blink">INSERT COIN</div>
+  <div id="ldDetail" class="ld-detail" hidden></div>
+  <div id="ldActions" class="ld-actions" hidden>
+    <button id="ldRetry" class="neon-btn cyan" type="button">&#8635; RETRY</button>
+    <button id="ldBack" class="neon-btn" type="button">&#9664; BACK TO GAMES</button>
+  </div>
+  <div id="ldTip" class="ld-tip"></div>
+  <div class="ld-scan"></div>
+</div>
+
+<script type="application/json" id="catalog">@@CATALOG_JSON@@</script>
+<script>
+(() => {
+  'use strict';
+
+  // ---------------------------------------------------------------- settings
+  const $ = (id) => document.getElementById(id);
+  const metaValue = (name) => {
+    const el = document.querySelector('meta[name="' + name + '"]');
+    const value = el ? (el.getAttribute('content') || '').trim() : '';
+    return /^\{\{[^}]*\}\}$/.test(value) ? '' : value; // an unresolved placeholder means "use the default"
+  };
+  const DEFAULT_SERVER = 'https://ftgames.xyz';
+  const MAKECODE = 'https://arcade.makecode.com/';
+  const SERVER = (() => {
+    const raw = metaValue('haze-server');
+    try {
+      const url = new URL(raw || DEFAULT_SERVER);
+      if (url.protocol === 'https:' || url.protocol === 'http:') return url.origin;
+    } catch (e) { /* fall through */ }
+    return DEFAULT_SERVER;
+  })();
+  const HOLD_MS = (() => {
+    const n = Number.parseInt(metaValue('haze-hold'), 10);
+    return (Number.isFinite(n) ? Math.min(Math.max(n, 0), 30) : 5) * 1000;
+  })();
+  const LIVE_LIST = !/^(false|no|0)$/i.test(metaValue('haze-live'));
+
+  // Games run in their own origin (storage, workers and saves work as on the site) but may not navigate this page.
+  const SANDBOX = 'allow-scripts allow-same-origin allow-forms allow-modals allow-pointer-lock allow-popups ' +
+    'allow-popups-to-escape-sandbox allow-downloads allow-orientation-lock allow-presentation';
+  const ALLOW = 'autoplay; fullscreen; gamepad; clipboard-read; clipboard-write; screen-wake-lock';
+  const SAFE_SEGMENT = /^[A-Za-z0-9._~-]+$/;
+  const TIPS = [
+    'TIP: Click the \u2606 on a game to add it to your favourites.',
+    'TIP: The \u{1F3E0} Home button at the top right brings you back here.',
+    'TIP: Click inside a game once it starts so it gets your keyboard.',
+    'TIP: \u{1F4D6} Instructions sits at the top left of most games.',
+    'TIP: Search by name, or filter by genre and difficulty.',
+  ];
+
+  // ---------------------------------------------------------------- helpers
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const nextPaint = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+  const tidy = (text) => String(text || '').replace(/\s+/g, ' ').trim();
+  const stripPrefix = (text, prefix) => (text.toLowerCase().startsWith(prefix.toLowerCase()) ? text.slice(prefix.length).trim() : text);
+  const el = (tag, cls, text) => {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+  const withTimeout = (promise, ms) => Promise.race([promise, sleep(ms).then(() => { throw new Error('timeout'); })]);
+
+  let seq = 0; // every navigation gets a number; a newer one cancels what an older one still had to do
+  const begin = () => ++seq;
+  const alive = (n) => n === seq;
+
+  // ---------------------------------------------------------------- catalogue
+  function topSegment(path) {
+    const first = String(path).split(/[?#]/)[0].split('/').filter(Boolean)[0] || '';
+    return SAFE_SEGMENT.test(first) ? first : '';
+  }
+
+  function prepare(game) {
+    const g = Object.assign({ buttons: { home: false, instr: false, display: 'flex', lineHeight: 'normal' }, instructions: null, preloadBytes: 0, lazyBytes: 0 }, game);
+    g.key = hrefKey(g.href);
+    g.isGame = g.isGame !== false;
+    if (g.kind === 'ft') {
+      g.pageUrl = SERVER + g.url;
+      g.frameSources = [SERVER + '/' + topSegment(g.url) + '/', SERVER + '/' + topSegment(g.url)];
+      g.instructionsUrl = g.instructions ? SERVER + g.instructions : '';
+    } else if (g.kind === 'makecode') {
+      g.pageUrl = g.url;
+      g.frameSources = [MAKECODE + '---run'];
+    } else {
+      g.pageUrl = g.href;
+      g.frameSources = [];
+    }
+    return g;
+  }
+
+  function hrefKey(href) {
+    let h = String(href || '').trim();
+    if (h.toLowerCase().startsWith(SERVER.toLowerCase())) h = h.slice(SERVER.length);
+    else if (h.toLowerCase().startsWith(DEFAULT_SERVER)) h = h.slice(DEFAULT_SERVER.length);
+    return h.replace(/\/+$/, '').toLowerCase();
+  }
+
+  const SNAPSHOT = (() => {
+    try {
+      return JSON.parse($('catalog').textContent).games.map(prepare);
+    } catch (e) {
+      return [];
+    }
+  })();
+
+  // Reads the cards of the live games page, so games FT Games adds later show up without a new extension.
+  async function fetchLiveCards() {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 7000);
+    try {
+      const response = await fetch(SERVER + '/games.html', { mode: 'cors', credentials: 'omit', cache: 'no-cache', signal: controller.signal });
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+      return Array.from(doc.querySelectorAll('a.game-card')).map((a) => {
+        const pick = (selector) => tidy((a.querySelector(selector) || {}).textContent);
+        const img = a.querySelector('img.game-card-thumbnail');
+        return {
+          href: (a.getAttribute('href') || '').trim(),
+          title: pick('.game-card-title'),
+          description: pick('.game-card-description'),
+          genre: stripPrefix(pick('.game-tag-genre'), 'Genre:'),
+          difficulty: stripPrefix(pick('.game-tag-difficulty'), 'Difficulty:'),
+          thumb: img ? (img.getAttribute('src') || '').trim() : '',
+        };
+      }).filter((card) => card.href && card.title);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function fromLiveCard(card) {
+    const base = { title: card.title, description: card.description, genre: card.genre, difficulty: card.difficulty, href: card.href, needsProfile: true };
+    let game = null;
+    if (card.href.startsWith(MAKECODE)) {
+      const id = card.href.slice(MAKECODE.length).replace(/\/+$/, '');
+      if (/^[A-Za-z0-9_-]+$/.test(id)) game = Object.assign(base, { kind: 'makecode', url: MAKECODE + '---run?id=' + id, needsProfile: false });
+    } else if (/^\/(?!\/)/.test(card.href)) {
+      const parts = card.href.split(/[?#]/)[0].split('/').filter(Boolean);
+      if (parts.length && parts.every((p) => SAFE_SEGMENT.test(p))) game = Object.assign(base, { kind: 'ft', url: '/' + parts.join('/') + (parts.length === 1 ? '/' : '') });
+    } else if (/^https?:\/\//i.test(card.href)) {
+      game = Object.assign(base, { kind: 'external', url: card.href, needsProfile: false });
+    }
+    if (!game) return null;
+    if (card.thumb && !/^[a-z][a-z0-9+.-]*:/i.test(card.thumb) && !card.thumb.startsWith('//')) {
+      try {
+        const url = new URL(card.thumb, SERVER + '/games.html');
+        if (url.origin === SERVER) game.thumb = url.href;
+      } catch (e) { /* no picture */ }
+    }
+    if (card.href === '/suggestion_box') game.isGame = false;
+    return prepare(game);
+  }
+
+  function mergeLive(cards) {
+    if (!Array.isArray(cards) || cards.length < Math.min(5, Math.ceil(SNAPSHOT.length / 2))) return null;
+    const known = new Map(SNAPSHOT.map((g) => [g.key, g]));
+    const seen = new Set();
+    const merged = [];
+    for (const card of cards) {
+      const key = hrefKey(card.href);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const snapshot = known.get(key);
+      if (snapshot) {
+        merged.push(Object.assign({}, snapshot, {
+          title: card.title || snapshot.title,
+          description: card.description || snapshot.description,
+          genre: card.genre || snapshot.genre,
+          difficulty: card.difficulty || snapshot.difficulty,
+        }));
+      } else {
+        const fresh = fromLiveCard(card);
+        if (fresh) merged.push(fresh);
+      }
+    }
+    return merged.length ? merged : null;
+  }
+
+  // Lets the game frames show only the games themselves: when a game's page tries to leave the game (its own Home
+  // link, "Back to safety", ...), the navigation is blocked and the arcade takes the player back to the games page.
+  let framePolicyInstalled = false;
+  function installFramePolicy(list) {
+    if (framePolicyInstalled) return;
+    framePolicyInstalled = true;
+    const sources = new Set();
+    for (const g of list) for (const source of g.frameSources) sources.add(source);
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'Content-Security-Policy';
+    meta.content = 'frame-src ' + (sources.size ? Array.from(sources).join(' ') : "'none'");
+    document.head.appendChild(meta);
+  }
+
+  // A game that is new on the site: read its page once to see which FT Games buttons it draws.
+  async function profileGame(g) {
+    g.needsProfile = false;
+    if (g.kind !== 'ft') return;
+    try {
+      const response = await withTimeout(fetch(g.pageUrl, { mode: 'cors', credentials: 'omit', cache: 'no-cache' }), 5000);
+      const html = await response.text();
+      const css = (html.match(/#homeButton\s*,\s*#instructionsButton\s*\{([^}]*)\}/) || html.match(/#homeButton\s*\{([^}]*)\}/) || ['', ''])[1];
+      g.buttons = {
+        home: /id=["']homeButton["']/.test(html),
+        instr: /id=["']instructionsButton["']/.test(html),
+        display: /display\s*:\s*inline-flex/i.test(css) ? 'flex' : 'block',
+        lineHeight: effectiveLineHeight(css),
+      };
+      const open = html.match(/window\.open\(\s*["'`]([^"'`]+)["'`]/);
+      if (g.buttons.instr && open) {
+        const target = new URL(open[1].replace(/^https:\/\/ftgames\.xyz/, SERVER), g.pageUrl);
+        if (target.origin === SERVER && topSegment(target.pathname) === topSegment(g.url)) g.instructionsUrl = target.href;
+      }
+    } catch (e) {
+      g.buttons = { home: true, instr: false, display: 'flex', lineHeight: 'normal' };
+    }
+  }
+
+  // The line-height a CSS rule ends up with ("font: ... !important" resets it and beats a later line-height: 1).
+  function effectiveLineHeight(css) {
+    let value = 'normal';
+    let important = false;
+    for (const declaration of css.split(';')) {
+      const colon = declaration.indexOf(':');
+      if (colon < 0) continue;
+      const prop = declaration.slice(0, colon).trim().toLowerCase();
+      let val = declaration.slice(colon + 1).trim().toLowerCase();
+      const isImportant = val.includes('!important');
+      val = val.replace('!important', '').trim();
+      let next;
+      if (prop === 'font') {
+        const m = val.match(/\d(?:px|pt|em|rem|%)?\s*\/\s*([\w.]+)/);
+        next = m ? m[1] : 'normal';
+      } else if (prop === 'line-height') {
+        next = val;
+      } else {
+        continue;
+      }
+      if (isImportant || !important) {
+        value = next;
+        important = important || isImportant;
+      }
+    }
+    return value === '1' || value === '1.0' ? '1' : 'normal';
+  }
+
+  // ---------------------------------------------------------------- loading screen
+  const loader = {
+    tipTimer: 0,
+    show(now, title, options) {
+      const opts = options || {};
+      $('ldNow').textContent = now;
+      $('ldTitle').textContent = title;
+      $('ldDetail').hidden = true;
+      $('ldActions').hidden = !opts.cancel;
+      $('ldRetry').hidden = true;
+      $('ldBack').hidden = !opts.cancel;
+      $('ldBar').hidden = false;
+      this.progress(0);
+      this.status('LOADING...', true);
+      $('ldTip').textContent = TIPS[Math.floor(Math.random() * TIPS.length)];
+      $('loader').classList.remove('out');
+    },
+    progress(value) {
+      const p = clamp(value, 0, 1);
+      $('ldFill').style.width = (p * 100).toFixed(1) + '%';
+      $('ldBar').classList.toggle('full', p >= 1);
+    },
+    status(text, blink) {
+      const node = $('ldStatus');
+      if (node.textContent !== text) node.textContent = text;
+      node.classList.toggle('blink', !!blink);
+      node.classList.remove('error');
+    },
+    error(title, detail, onRetry) {
+      this.status(title, false);
+      $('ldStatus').classList.add('error');
+      $('ldDetail').textContent = detail;
+      $('ldDetail').hidden = false;
+      $('ldBar').hidden = true;
+      $('ldActions').hidden = false;
+      $('ldRetry').hidden = !onRetry;
+      $('ldBack').hidden = false;
+      retryAction = onRetry || null;
+    },
+    hide() {
+      $('loader').classList.add('out');
+    },
+    visible() {
+      return !$('loader').classList.contains('out');
+    },
+  };
+  let retryAction = null;
+
+  // Moves the bar towards `to` over `ms` (or, with ms = 0, creeps towards it until `until` resolves).
+  async function runBar(n, from, to, ms, until) {
+    const start = performance.now();
+    let done = false;
+    if (until) until.then(() => { done = true; }, () => { done = true; });
+    for (;;) {
+      if (!alive(n)) return;
+      const t = performance.now() - start;
+      if (ms > 0) {
+        loader.progress(from + (to - from) * Math.min(t / ms, 1));
+        if (t >= ms) return;
+      } else {
+        loader.progress(from + (to - from) * (1 - Math.exp(-t / 2500)));
+        if (done) return;
+      }
+      await sleep(100);
+    }
+  }
+
+  // "Make it wait 5 secs on the loading screen after loading everything."
+  async function holdOnLoader(n) {
+    loader.progress(1);
+    const end = performance.now() + HOLD_MS;
+    while (alive(n)) {
+      const left = end - performance.now();
+      if (left <= 0) return;
+      loader.status('GET READY  ' + Math.ceil(left / 1000), true);
+      await sleep(Math.min(200, left));
+    }
+  }
+
+  function waitForImages(root, onProgress, ms) {
+    const images = Array.from(root.querySelectorAll('img'));
+    if (!images.length) return Promise.resolve();
+    let finished = 0;
+    const settle = () => onProgress(++finished / images.length);
+    return withTimeout(Promise.all(images.map((img) => {
+      const ready = img.complete ? Promise.resolve() : new Promise((resolve) => {
+        img.addEventListener('load', resolve, { once: true });
+        img.addEventListener('error', resolve, { once: true });
+      });
+      return ready.then(() => (img.decode ? img.decode().catch(() => {}) : null)).then(settle);
+    })), ms).catch(() => {});
+  }
+
+  // ---------------------------------------------------------------- games page
+  let games = [];
+  const favorites = new Set(); // kept for this PhantomHaze session (extension pages have no storage)
+  let homeScroll = 0;
+
+  function difficultyClass(value) {
+    const v = value.toLowerCase();
+    return v === 'easy' || v === 'medium' || v === 'hard' ? v : 'other';
+  }
+
+  function buildCard(g) {
+    const card = el('div', 'card');
+    card.dataset.id = g.id || g.key;
+    const play = el('button', 'play');
+    play.type = 'button';
+    play.title = g.kind === 'external' || g.open === 'tab' ? 'Opens in a new PhantomHaze tab' : 'Play ' + g.title;
+    const thumb = el('div', 'thumb');
+    if (g.thumb) {
+      const img = el('img');
+      img.alt = g.title + ' thumbnail';
+      img.decoding = 'async';
+      img.src = g.thumb;
+      img.addEventListener('error', () => { img.remove(); thumb.prepend(el('div', 'ph', g.title)); }, { once: true });
+      thumb.append(img);
+    } else {
+      thumb.append(el('div', 'ph', g.title));
+    }
+    if (g.kind === 'makecode') thumb.append(el('span', 'badge', 'MAKECODE'));
+    if (g.kind === 'external' || g.open === 'tab') thumb.append(el('span', 'badge', 'OPENS IN TAB \u2197'));
+    const body = el('div', 'card-body');
+    body.append(el('div', 'card-title', g.title));
+    if (g.description) {
+      const desc = el('div', 'card-desc', g.description);
+      desc.title = g.description;
+      body.append(desc);
+    }
+    if (g.isGame && (g.genre || g.difficulty)) {
+      const tags = el('div', 'tags');
+      if (g.genre) tags.append(el('span', 'tag genre', g.genre));
+      if (g.difficulty) tags.append(el('span', 'tag ' + difficultyClass(g.difficulty), g.difficulty));
+      body.append(tags);
+    }
+    play.append(thumb, body);
+    play.addEventListener('click', () => launch(g));
+    card.append(play);
+    if (g.isGame) {
+      const star = el('button', 'fav');
+      star.type = 'button';
+      star.addEventListener('click', (event) => {
+        event.stopPropagation();
+        toggleFavorite(g, card);
+      });
+      card.append(star);
+    }
+    return card;
+  }
+
+  function updateStars() {
+    document.querySelectorAll('.card').forEach((card) => {
+      const star = card.querySelector('.fav');
+      if (!star) return;
+      const on = favorites.has(card.dataset.id);
+      star.textContent = on ? '\u2605' : '\u2606';
+      star.classList.toggle('on', on);
+      star.setAttribute('aria-pressed', on ? 'true' : 'false');
+      star.title = on ? 'Remove from favourites' : 'Add to favourites';
+      star.setAttribute('aria-label', (on ? 'Remove ' : 'Add ') + card.querySelector('.card-title').textContent + (on ? ' from' : ' to') + ' favourites');
+    });
+  }
+
+  function renderFavorites() {
+    const grid = $('favGrid');
+    grid.replaceChildren(...games.filter((g) => favorites.has(g.id || g.key)).map(buildCard));
+    $('favSection').hidden = favorites.size === 0;
+    $('favTip').hidden = favorites.size > 0;
+    updateStars();
+  }
+
+  function toggleFavorite(g, card) {
+    const id = g.id || g.key;
+    if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
+    renderFavorites();
+    if (favorites.has(id) && card) {
+      card.classList.remove('burst');
+      void card.offsetWidth;
+      card.classList.add('burst');
+    }
+  }
+
+  function renderHome() {
+    const grid = $('grid');
+    grid.replaceChildren(...games.map(buildCard));
+    const real = games.filter((g) => g.isGame);
+    $('count').textContent = '(' + real.length + ')';
+    const genres = Array.from(new Set(real.map((g) => g.genre).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+    const order = ['Easy', 'Medium', 'Hard'];
+    const levels = Array.from(new Set(real.map((g) => g.difficulty).filter(Boolean)));
+    const sortedLevels = order.filter((d) => levels.includes(d)).concat(levels.filter((d) => !order.includes(d)).sort());
+    const fill = (select, values, label) => {
+      select.replaceChildren(new Option(label, ''), ...values.map((v) => new Option(v, v)));
+    };
+    fill($('genre'), genres, 'All genres');
+    fill($('difficulty'), sortedLevels, 'All difficulties');
+    renderFavorites();
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const query = $('search').value.trim().toLowerCase();
+    const genre = $('genre').value;
+    const level = $('difficulty').value;
+    const filtering = Boolean(query || genre || level);
+    let shown = 0;
+    $('grid').querySelectorAll('.card').forEach((card, index) => {
+      const g = games[index];
+      let visible;
+      if (!g.isGame) {
+        visible = !filtering;
+      } else {
+        visible = (!query || (g.title + ' ' + g.description).toLowerCase().includes(query)) &&
+          (!genre || g.genre === genre) && (!level || g.difficulty === level);
+        if (visible) shown++;
+      }
+      card.hidden = !visible;
+    });
+    $('empty').hidden = shown > 0 || !filtering;
+  }
+
+  function showNotice(text) {
+    $('notice').textContent = text;
+    $('notice').hidden = false;
+  }
+
+  function setHomeActive(active) {
+    const home = $('home');
+    if (active) {
+      home.classList.remove('away');
+      home.inert = false;
+      home.scrollTop = homeScroll;
+    } else {
+      if (!home.classList.contains('away')) homeScroll = home.scrollTop;
+      home.classList.add('away');
+      home.inert = true;
+    }
+  }
+
+  // ---------------------------------------------------------------- game player
+  let view = 'boot'; // boot | home | loading | game
+  let current = null;
+  let gameFrame = null;
+  let instrFrame = null;
+  let lastLoad = { frame: null, at: 0 };
+
+  function makeFrame(url, title) {
+    const frame = document.createElement('iframe');
+    frame.setAttribute('sandbox', SANDBOX);
+    frame.setAttribute('allow', ALLOW);
+    frame.setAttribute('allowfullscreen', '');
+    frame.title = title;
+    frame.addEventListener('load', () => { lastLoad = { frame, at: performance.now() }; });
+    frame.src = url;
+    return frame;
+  }
+
+  function removeGameFrame() {
+    if (gameFrame) gameFrame.remove();
+    gameFrame = null;
+  }
+
+  function placeButtons(g) {
+    const buttons = g.buttons || {};
+    for (const id of ['homeBtn', 'instrBtn']) {
+      $(id).classList.toggle('block', buttons.display === 'block');
+      $(id).classList.toggle('tight', buttons.lineHeight === '1');
+    }
+    $('homeBtn').hidden = false;
+    $('instrBtn').hidden = !(buttons.instr && g.instructionsUrl);
+    // Games hosted by others (Minecraft, MakeCode, Microsoft Forms) also get a way out to a full tab, in case one
+    // of them needs something an extension page cannot give its frames (a secure context).
+    $('tabBtn').hidden = !g.tabButton;
+    if (g.tabButton) $('tabBtn').style.right = (10 + $('homeBtn').offsetWidth + 10) + 'px';
+  }
+
+  function frameLoaded(frame, n) {
+    return new Promise((resolve) => {
+      const done = () => resolve(true);
+      frame.addEventListener('load', done, { once: true });
+      setTimeout(() => resolve(false), 45000);
+      const poll = setInterval(() => { if (!alive(n)) { clearInterval(poll); resolve(false); } }, 250);
+      frame.addEventListener('load', () => clearInterval(poll), { once: true });
+    });
+  }
+
+  // How long a Scratch game still needs after its page has loaded: it downloads its project's assets (at the speed
+  // its 1.8 MB page arrived, less ~0.3 s of latency and script start-up) and unpacks them (about 9 MB/s plus 0.8 s
+  // to start the project). Fitted to the FT Games library at 1.5, 4 and 15 MB/s, erring a little long.
+  function extraLoadMs(g, pageMs) {
+    if (!g.lazyBytes) return 0;
+    const speed = g.preloadBytes > 300000 ? clamp(g.preloadBytes / (Math.max(pageMs - 300, 100) / 1000), 2e5, 4e7) : 2e6;
+    return clamp((g.lazyBytes / speed + g.lazyBytes / 9e6) * 1000 + 800, 500, 45000);
+  }
+
+  async function reachable(url) {
+    if (navigator.onLine === false) return false;
+    try {
+      await withTimeout(fetch(url, { mode: 'no-cors', credentials: 'omit', cache: 'no-store' }), 15000);
+      return true;
+    } catch (e) {
+      return e && e.message === 'timeout'; // a slow server is not an offline one
+    }
+  }
+
+  // PhantomHaze turns window.open from an extension page into a new protected tab (and switches to Web View), but
+  // only while the click that asked for it is still fresh, so this has to run straight from the click.
+  function openInTab(g) {
+    // FT Games pages get the arcade loading screen in the tab (#haze-arcade); MakeCode games open their full share
+    // page there, the page FT Games links to.
+    const url = g.kind === 'ft' ? g.pageUrl + '#haze-arcade' : (g.kind === 'makecode' ? g.href : g.pageUrl);
+    window.open(url, '_blank', 'noopener');
+    showToast(g.title + ' opened in a new PhantomHaze tab. Click Haze Arcade in the menu bar to come back here.');
+  }
+
+  let toastTimer = 0;
+  function showToast(text) {
+    $('toast').textContent = text;
+    $('toast').hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { $('toast').hidden = true; }, 20000);
+  }
+
+  async function launch(g) {
+    if (g.kind === 'external' || g.open === 'tab') {
+      openInTab(g);
+      return;
+    }
+    const n = begin();
+    view = 'loading';
+    current = g;
+    loader.show('NOW LOADING', g.title.toUpperCase(), { cancel: true });
+    await nextPaint();
+    if (!alive(n)) return;
+    closeInstructions(false);
+    removeGameFrame();
+    setHomeActive(false);
+    if (g.needsProfile) {
+      await profileGame(g);
+      if (!alive(n)) return;
+    }
+    $('stage').hidden = false; // still under the loading screen; shown first so the buttons can be measured
+    placeButtons(g);
+
+    const started = performance.now();
+    const frame = makeFrame(g.pageUrl, g.title);
+    gameFrame = frame;
+    $('frameHost').append(frame);
+    // An offline page would otherwise load "successfully" as the browser's error page.
+    reachable(g.pageUrl).then((reached) => {
+      if (!reached && alive(n) && view === 'loading') failLoad(n, g);
+    });
+
+    const loaded = frameLoaded(frame, n);
+    runBar(n, 0, 0.55, 0, loaded);
+    const ok = await loaded;
+    if (!alive(n)) return;
+    const extra = ok ? extraLoadMs(g, performance.now() - started) : 0;
+    if (extra > 0) {
+      loader.status('LOADING GAME FILES...', true);
+      await runBar(n, 0.55, 1, extra);
+      if (!alive(n)) return;
+    }
+    await holdOnLoader(n);
+    if (!alive(n)) return;
+    view = 'game';
+    loader.hide();
+    try { frame.focus(); } catch (e) { /* ignore */ }
+  }
+
+  function failLoad(n, g) {
+    if (!alive(n)) return;
+    const m = begin(); // stop the running load
+    removeGameFrame();
+    $('stage').hidden = true;
+    loader.error("CAN'T REACH " + (g.kind === 'makecode' ? 'MAKECODE ARCADE' : 'FT GAMES'),
+      'Games are streamed from ' + (g.kind === 'makecode' ? 'arcade.makecode.com' : SERVER.replace(/^https?:\/\//, '')) +
+      ', so Haze Arcade needs an internet connection. Check your connection and try again.',
+      () => { if (alive(m)) launch(g); });
+  }
+
+  async function goHome() {
+    const n = begin();
+    loader.show('LOADING', 'GAMES LIBRARY', { cancel: false });
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    await nextPaint();
+    if (!alive(n)) return;
+    closeInstructions(false);
+    removeGameFrame();
+    current = null;
+    $('stage').hidden = true;
+    setHomeActive(true);
+    view = 'loading';
+    await runBar(n, 0, 1, 350);
+    await holdOnLoader(n);
+    if (!alive(n)) return;
+    view = 'home';
+    loader.hide();
+  }
+
+  // ---------------------------------------------------------------- instructions
+  function openInstructions() {
+    if (!current || !current.instructionsUrl) return;
+    closeInstructions(false);
+    $('instrTitle').textContent = current.title.toUpperCase() + ' - HOW TO PLAY';
+    instrFrame = makeFrame(current.instructionsUrl, current.title + ' instructions');
+    $('instrHost').append(instrFrame);
+    $('instr').hidden = false;
+    $('instrClose').focus();
+  }
+
+  function closeInstructions(refocus) {
+    if (instrFrame) instrFrame.remove();
+    instrFrame = null;
+    $('instr').hidden = true;
+    if (refocus && gameFrame) {
+      try { gameFrame.focus(); } catch (e) { /* ignore */ }
+    }
+  }
+
+  // ---------------------------------------------------------------- leaving a game from inside it
+  function onBlockedFrameNavigation() {
+    const recent = performance.now() - lastLoad.at < 2000 ? lastLoad.frame : null;
+    if (instrFrame && recent === instrFrame) {
+      closeInstructions(true);
+      return;
+    }
+    if (view === 'game' || view === 'loading') goHome();
+  }
+
+  document.addEventListener('securitypolicyviolation', (event) => {
+    const directive = String(event.effectiveDirective || event.violatedDirective || '');
+    if (directive.startsWith('frame-src') || directive.startsWith('child-src')) {
+      // The blocked frame commits an error page right around this event; give its load event a moment.
+      setTimeout(onBlockedFrameNavigation, 60);
+    }
+  });
+
+  // ---------------------------------------------------------------- start
+  async function boot() {
+    const n = begin();
+    loader.show('LOADING', 'GAMES LIBRARY', { cancel: false });
+    let list = SNAPSHOT;
+    let offline = false;
+    if (LIVE_LIST) {
+      loader.status('CHECKING FOR NEW GAMES...', true);
+      const live = fetchLiveCards();
+      runBar(n, 0, 0.4, 0, live);
+      try {
+        list = mergeLive(await live) || SNAPSHOT;
+      } catch (e) {
+        offline = true;
+      }
+    }
+    if (!alive(n)) return;
+    games = list;
+    installFramePolicy(games);
+    renderHome();
+    if (offline) {
+      showNotice("Couldn't reach " + SERVER.replace(/^https?:\/\//, '') + ' just now, so this is the game list built into Haze Arcade. ' +
+        'Games stream from the FT Games site, so they need an internet connection.');
+    }
+    loader.status('LOADING GAMES...', true);
+    await waitForImages($('grid'), (p) => loader.progress(0.4 + 0.55 * p), 10000);
+    if (document.fonts && document.fonts.ready) await withTimeout(document.fonts.ready, 3000).catch(() => {});
+    if (!alive(n)) return;
+    setHomeActive(true);
+    await holdOnLoader(n);
+    if (!alive(n)) return;
+    view = 'home';
+    loader.hide();
+  }
+
+  $('search').addEventListener('input', applyFilters);
+  $('genre').addEventListener('change', applyFilters);
+  $('difficulty').addEventListener('change', applyFilters);
+  $('homeBtn').addEventListener('click', goHome);
+  $('instrBtn').addEventListener('click', openInstructions);
+  $('tabBtn').addEventListener('click', () => { if (current) openInTab(current); });
+  $('instrClose').addEventListener('click', () => closeInstructions(true));
+  $('instr').addEventListener('click', (event) => { if (event.target === $('instr')) closeInstructions(true); });
+  $('ldBack').addEventListener('click', goHome);
+  $('ldRetry').addEventListener('click', () => { if (retryAction) retryAction(); });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !$('instr').hidden) closeInstructions(true);
+  });
+
+  window.addEventListener('error', () => {
+    if (view === 'boot' && loader.visible()) {
+      loader.error('SOMETHING WENT WRONG', 'Haze Arcade could not start. Try again, or reinstall the extension.', () => location.reload());
+    }
+  });
+
+  // For automated tests only: lets them read the arcade's state (nothing here can change it).
+  Object.defineProperty(window, '__hazeArcade', { value: Object.freeze({ state: () => ({ view, game: current && current.id, server: SERVER, holdMs: HOLD_MS, live: LIVE_LIST, games: games.length, favorites: favorites.size }) }) });
+
+  boot();
+})();
+</script>
+</body>
+</html>

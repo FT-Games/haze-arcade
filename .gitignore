@@ -1,0 +1,4 @@
+tests/out/
+tests/phext-check/bin/
+tests/phext-check/obj/
+__pycache__/

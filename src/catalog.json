@@ -1,0 +1,753 @@
+{
+  "source": "games.html",
+  "games": [
+    {
+      "title": "Platformer Game",
+      "description": "A fun platformer game, avoid lava while going into the blue portals, will you reach the end?",
+      "genre": "Platformer",
+      "difficulty": "Easy",
+      "href": "/platformer_game",
+      "id": "platformer-game",
+      "kind": "ft",
+      "url": "/platformer_game/",
+      "frame": [
+        "/platformer_game/",
+        "/platformer_game"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/platformer_game/instructions.html",
+      "preloadBytes": 1832191,
+      "lazyBytes": 490857,
+      "thumb": "platformer-game.webp"
+    },
+    {
+      "title": "F111 Game",
+      "description": "Survive the MIG23 encounter for as long as you can without being shot by the deadly MIG. \ud83d\udc80",
+      "genre": "Planes",
+      "difficulty": "Easy",
+      "href": "/f111_game",
+      "id": "f111-game",
+      "kind": "ft",
+      "url": "/f111_game/",
+      "frame": [
+        "/f111_game/",
+        "/f111_game"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/f111_game/instructions.html",
+      "preloadBytes": 1832195,
+      "lazyBytes": 521866,
+      "thumb": "f111-game.webp"
+    },
+    {
+      "title": "Scratch Playground",
+      "description": "Roam around and enjoy this fun Scratch sandbox game, build anything you can imagine and have fun!",
+      "genre": "Sandbox",
+      "difficulty": "Easy",
+      "href": "/scratch_playground",
+      "id": "scratch-playground",
+      "kind": "ft",
+      "url": "/scratch_playground/",
+      "frame": [
+        "/scratch_playground/",
+        "/scratch_playground"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/scratch_playground/instructions.html",
+      "preloadBytes": 1832201,
+      "lazyBytes": 913280,
+      "thumb": "scratch-playground.webp"
+    },
+    {
+      "title": "Among Us Platformer",
+      "description": "Work your way through the obstacles to make it to the end in this fun platformer game. Credits to -Mirano- for the original game on scratch.",
+      "genre": "Platformer",
+      "difficulty": "Easy",
+      "href": "/among-us-platformer",
+      "id": "among-us-platformer",
+      "kind": "ft",
+      "url": "/among-us-platformer/",
+      "frame": [
+        "/among-us-platformer/",
+        "/among-us-platformer"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/among-us-platformer/instructions.html",
+      "preloadBytes": 1827162,
+      "lazyBytes": 26184066,
+      "thumb": "among-us-platformer.webp"
+    },
+    {
+      "title": "Modern Dogfights",
+      "description": "Fight with a friend, one is in a SU27, the other is in an F15. Fight to the death in this fun modern dogfights simulator!",
+      "genre": "Planes",
+      "difficulty": "Easy",
+      "href": "/modern_dogfights",
+      "id": "modern-dogfights",
+      "kind": "ft",
+      "url": "/modern_dogfights/",
+      "frame": [
+        "/modern_dogfights/",
+        "/modern_dogfights"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/modern_dogfights/instructions.html",
+      "preloadBytes": 1832193,
+      "lazyBytes": 2406048,
+      "thumb": "modern-dogfights.webp"
+    },
+    {
+      "title": "Chess",
+      "description": "Play a fun game of chess with your friends, will you be the one to claim checkmate? Thanks to Alex Burton for the original game.",
+      "genre": "Strategy",
+      "difficulty": "Medium",
+      "href": "/chess",
+      "id": "chess",
+      "kind": "ft",
+      "url": "/chess/",
+      "frame": [
+        "/chess/",
+        "/chess"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "block",
+        "lineHeight": "normal"
+      },
+      "instructions": "/chess/rules.html",
+      "preloadBytes": 39881,
+      "lazyBytes": 0,
+      "thumb": "chess.webp"
+    },
+    {
+      "title": "Idle Gacha Roller",
+      "description": "This game originated in Project Jeff, which was since degraded and replaced with FT Games! Push your luck and earn your digital fortune with this fun Ga[...]",
+      "genre": "Idle",
+      "difficulty": "Easy",
+      "href": "/idle_gacha_roller",
+      "id": "idle-gacha-roller",
+      "kind": "ft",
+      "url": "/idle_gacha_roller/",
+      "frame": [
+        "/idle_gacha_roller/",
+        "/idle_gacha_roller"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/idle_gacha_roller/instructions.html",
+      "preloadBytes": 52589,
+      "lazyBytes": 0,
+      "thumb": "idle-gacha-roller.webp"
+    },
+    {
+      "title": "Farming Sim 19",
+      "description": "Thanks to kimy_jeff for the original project Farming Simulator 19 Single Player.",
+      "genre": "Simulator",
+      "difficulty": "Easy",
+      "href": "/farming_sim_19",
+      "id": "farming-sim-19",
+      "kind": "ft",
+      "url": "/farming_sim_19/",
+      "frame": [
+        "/farming_sim_19/",
+        "/farming_sim_19"
+      ],
+      "buttons": {
+        "home": false,
+        "instr": false,
+        "display": "block",
+        "lineHeight": "normal"
+      },
+      "instructions": null,
+      "preloadBytes": 1849657,
+      "lazyBytes": 399962,
+      "thumb": "farming-sim-19.webp"
+    },
+    {
+      "title": "Snake.ft",
+      "description": "Like Snake.io, but better. Slither around and earn points to get your highest score! How long will you last? Thanks to NicholasGG601 for the original project on scratch.",
+      "genre": "Arcade",
+      "difficulty": "Medium",
+      "href": "/snake_io",
+      "id": "snake-io",
+      "kind": "ft",
+      "url": "/snake_io/",
+      "frame": [
+        "/snake_io/",
+        "/snake_io"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/snake_io/instructions.html",
+      "preloadBytes": 1855240,
+      "lazyBytes": 1003932,
+      "thumb": "snake-io.webp"
+    },
+    {
+      "title": "Minesweeper",
+      "description": "Uncover squares and use numbered clues to find all the hidden mines without detonating any. A classic puzzle game that sharpens your strategic thinking! Credits to Hobson-TV for this game on scratch.",
+      "genre": "Puzzle",
+      "difficulty": "Medium",
+      "href": "/minesweeper",
+      "id": "minesweeper",
+      "kind": "ft",
+      "url": "/minesweeper/",
+      "frame": [
+        "/minesweeper/",
+        "/minesweeper"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/minesweeper/instructions.html",
+      "preloadBytes": 1832172,
+      "lazyBytes": 101401,
+      "thumb": "minesweeper.webp"
+    },
+    {
+      "title": "Flappy Duck",
+      "description": "Flap your way through this tricky obstacle course with this classic infinite runner game. Please note that this game is pretty chunky and may not work on all devices.",
+      "genre": "Arcade",
+      "difficulty": "Medium",
+      "href": "/flappy_duck",
+      "id": "flappy-duck",
+      "kind": "ft",
+      "url": "/flappy_duck/",
+      "frame": [
+        "/flappy_duck/",
+        "/flappy_duck"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/flappy_duck/instructions.html",
+      "preloadBytes": 1855395,
+      "lazyBytes": 6184172,
+      "thumb": "flappy-duck.webp"
+    },
+    {
+      "title": "Vent Crawlers Beta",
+      "description": "Beta game, subject to change. Please note that by clicking on this game card, you will be taken to an external website that is not operated by FT Games.",
+      "genre": "Maze",
+      "difficulty": "Medium",
+      "href": "https://arcade.makecode.com/S73309-71101-76715-73171",
+      "id": "vent-crawlers-beta",
+      "kind": "makecode",
+      "url": "https://arcade.makecode.com/---run?id=S73309-71101-76715-73171",
+      "frame": [
+        "https://arcade.makecode.com/---run"
+      ],
+      "buttons": {
+        "home": false,
+        "instr": false,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": null,
+      "preloadBytes": 0,
+      "lazyBytes": 0,
+      "thumb": "vent-crawlers-beta.webp",
+      "tabButton": true
+    },
+    {
+      "title": "Polytrack",
+      "description": "Race your way through a wide variety of tracks in this fun racing simulator. Thanks to Kodub for the original game and to Static for the original port.",
+      "genre": "Racing",
+      "difficulty": "Medium",
+      "href": "/polytrack",
+      "id": "polytrack",
+      "kind": "ft",
+      "url": "/polytrack/",
+      "frame": [
+        "/polytrack/",
+        "/polytrack"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/polytrack/instructions.html",
+      "preloadBytes": 1884746,
+      "lazyBytes": 0,
+      "thumb": "polytrack.webp",
+      "open": "tab"
+    },
+    {
+      "title": "Minecraft Classic",
+      "description": "Build, explore, and create in this iconic sandbox game. Let your imagination run wild as you construct anything you can dream up!",
+      "genre": "Sandbox",
+      "difficulty": "Medium",
+      "href": "/minecraft_classic",
+      "id": "minecraft-classic",
+      "kind": "ft",
+      "url": "/minecraft_classic/",
+      "frame": [
+        "/minecraft_classic/",
+        "/minecraft_classic"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/minecraft_classic/instructions.html",
+      "preloadBytes": 10237,
+      "lazyBytes": 0,
+      "thumb": "minecraft-classic.webp",
+      "tabButton": true
+    },
+    {
+      "title": "Arrow Battles",
+      "description": "Beta game, subject to change. Please note that by clicking on this game card, you will be taken to an external website that is not operated by FT Games.",
+      "genre": "Multiplayer",
+      "difficulty": "Medium",
+      "href": "https://arcade.makecode.com/S05292-48817-56543-81346",
+      "id": "arrow-battles",
+      "kind": "makecode",
+      "url": "https://arcade.makecode.com/---run?id=S05292-48817-56543-81346",
+      "frame": [
+        "https://arcade.makecode.com/---run"
+      ],
+      "buttons": {
+        "home": false,
+        "instr": false,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": null,
+      "preloadBytes": 0,
+      "lazyBytes": 0,
+      "thumb": "arrow-battles.webp",
+      "tabButton": true
+    },
+    {
+      "title": "Block Blast!",
+      "description": "Blast colored bricks to get your high score in this fun strategy game. Remember to break your high score not your computer in a rage. Thanks to Bwenedia for the original project on scratch.",
+      "genre": "Strategy",
+      "difficulty": "Easy",
+      "href": "/block_blast",
+      "id": "block-blast",
+      "kind": "ft",
+      "url": "/block_blast/",
+      "frame": [
+        "/block_blast/",
+        "/block_blast"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/block_blast/instructions.html",
+      "preloadBytes": 1831055,
+      "lazyBytes": 2489257,
+      "thumb": "block-blast.webp"
+    },
+    {
+      "title": "Crossy Road",
+      "description": "Help your character cross the busy road and avoid obstacles in this classic arcade game. Try not to get hit by cars! and there are many other dangers to watch out for. Thanks to HipsterWhale for the original project on scratch.",
+      "genre": "Arcade",
+      "difficulty": "Medium",
+      "href": "/crossy_road",
+      "id": "crossy-road",
+      "kind": "ft",
+      "url": "/crossy_road/",
+      "frame": [
+        "/crossy_road/",
+        "/crossy_road"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "block",
+        "lineHeight": "normal"
+      },
+      "instructions": "/crossy_road/instructions.html",
+      "preloadBytes": 1832056,
+      "lazyBytes": 20532073,
+      "thumb": "crossy-road.webp"
+    },
+    {
+      "title": "Tetris",
+      "description": "Tetris is a classic puzzle game where you manipulate falling, four-block shapes (Tetrominoes) to build and clear solid horizontal lines. Thanks to The_M for the original project on scratch.",
+      "genre": "Arcade",
+      "difficulty": "Medium",
+      "href": "/tetris",
+      "id": "tetris",
+      "kind": "ft",
+      "url": "/tetris/",
+      "frame": [
+        "/tetris/",
+        "/tetris"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/tetris/instructions.html",
+      "preloadBytes": 1832169,
+      "lazyBytes": 18817218,
+      "thumb": "tetris.webp"
+    },
+    {
+      "title": "\ud83c\udfc0Flappy Dunk",
+      "description": "Tap to keep the basketball in the air and guide it through hoops to score points. Master your timing, avoid missing hoops, and build the highest score possible. Thanks to AnimationsScratch for the original project on scratch.",
+      "genre": "Sports",
+      "difficulty": "Easy",
+      "href": "/flappy_dunk",
+      "id": "flappy-dunk",
+      "kind": "ft",
+      "url": "/flappy_dunk/",
+      "frame": [
+        "/flappy_dunk/",
+        "/flappy_dunk"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/flappy_dunk/instructions.html",
+      "preloadBytes": 1832199,
+      "lazyBytes": 2366480,
+      "thumb": "flappy-dunk.webp"
+    },
+    {
+      "title": "Money Mines",
+      "description": "Place your bet and choose your mines! Click tiles to reveal money and build your multiplier, but watch out\u2014hit a mine and lose it all. Cash out before greed takes over! Thanks to alphawolf6612 for the original project on scratch.",
+      "genre": "Strategy",
+      "difficulty": "Easy",
+      "href": "/money_mines",
+      "id": "money-mines",
+      "kind": "ft",
+      "url": "/money_mines/",
+      "frame": [
+        "/money_mines/",
+        "/money_mines"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/money_mines/instructions.html",
+      "preloadBytes": 1832205,
+      "lazyBytes": 1120550,
+      "thumb": "money-mines.webp"
+    },
+    {
+      "title": "\ud83d\udc7e SPACE INVADERS \ud83d\udc7e",
+      "description": "\ud83d\ude80 DEFEND EARTH, blast the invading alien fleet before they destroy you. Survive each wave, dodge enemy fire, and rack up the highest score! Thanks to RokCoder for the orginal project on scratch.",
+      "genre": "Arcade",
+      "difficulty": "Medium",
+      "href": "/space_invaders",
+      "id": "space-invaders",
+      "kind": "ft",
+      "url": "/space_invaders/",
+      "frame": [
+        "/space_invaders/",
+        "/space_invaders"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/space_invaders/instructions.html",
+      "preloadBytes": 1832188,
+      "lazyBytes": 546746,
+      "thumb": "space-invaders.webp"
+    },
+    {
+      "title": "Retro Pong",
+      "description": "The original Pong video game from the early 1970s, truly a retro classic! A simple arcade video game released by Atari. Players control paddles on opposite sides of the screen to hit a ball back and forth.",
+      "genre": "Arcade",
+      "difficulty": "Medium",
+      "href": "/retro_pong",
+      "id": "retro-pong",
+      "kind": "ft",
+      "url": "/retro_pong/",
+      "frame": [
+        "/retro_pong/",
+        "/retro_pong"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/retro_pong/instructions.html",
+      "preloadBytes": 1831900,
+      "lazyBytes": 187658,
+      "thumb": "retro-pong.webp"
+    },
+    {
+      "title": "\u2708\ufe0fPacific Dogfights\u2708\ufe0f",
+      "description": "Pilot your fighter aircraft through intense WWII Pacific battles. Dodge enemy fire, shoot down opposing planes, and survive each wave to become a legendary ace pilot! This is a remixed scratch project by Jcubas02 which Blabby_axolotl2 (one of our developers) tweaked a few settings and made it slightly easier.",
+      "genre": "Planes",
+      "difficulty": "Medium",
+      "href": "/pacific_dogfights",
+      "id": "pacific-dogfights",
+      "kind": "ft",
+      "url": "/pacific_dogfights/",
+      "frame": [
+        "/pacific_dogfights/",
+        "/pacific_dogfights"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/pacific_dogfights/instructions.html",
+      "preloadBytes": 1832209,
+      "lazyBytes": 18567685,
+      "thumb": "pacific-dogfights.webp"
+    },
+    {
+      "title": "Pac-Man Platformer",
+      "description": "Guide Pac-Man through challenging platformer levels while collecting pellets and avoiding enemies. Navigate the maze carefully to beat all levels! Credits to atomicmagicnumber for the original project on scratch.",
+      "genre": "Platformer",
+      "difficulty": "Medium",
+      "href": "/pac_man_platformer",
+      "id": "pac-man-platformer",
+      "kind": "ft",
+      "url": "/pac_man_platformer/",
+      "frame": [
+        "/pac_man_platformer/",
+        "/pac_man_platformer"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/pac_man_platformer/instructions.html",
+      "preloadBytes": 1831085,
+      "lazyBytes": 17154775,
+      "thumb": "pac-man-platformer.webp"
+    },
+    {
+      "title": "2D Platformer",
+      "description": "Parkour your way to the finish in this fun 2D platformer.",
+      "genre": "Platformer",
+      "difficulty": "Medium",
+      "href": "/2d_platformer/instructions",
+      "id": "2d-platformer",
+      "kind": "ft",
+      "url": "/2d_platformer/instructions.html",
+      "frame": [
+        "/2d_platformer/",
+        "/2d_platformer"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": false,
+        "display": "flex",
+        "lineHeight": "1"
+      },
+      "instructions": null,
+      "preloadBytes": 8784,
+      "lazyBytes": 0,
+      "thumb": "2d-platformer.webp"
+    },
+    {
+      "title": "World of Warships Legends",
+      "description": "Command your fleet and engage in epic naval battles in this game. Thanks to TitanRovan-99 for the original project on Scratch.",
+      "genre": "Action",
+      "difficulty": "Medium",
+      "href": "/wow",
+      "id": "wow",
+      "kind": "ft",
+      "url": "/wow/",
+      "frame": [
+        "/wow/",
+        "/wow"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/wow/instructions.html",
+      "preloadBytes": 1855404,
+      "lazyBytes": 9001741,
+      "thumb": "wow.webp"
+    },
+    {
+      "title": "My Tiny Shop",
+      "description": "Manage your own tiny shop and serve customers efficiently. Thanks to pirateollie for the original project on Scratch.",
+      "genre": "Simulation",
+      "difficulty": "Easy",
+      "href": "/tiny_shop_owner",
+      "id": "tiny-shop-owner",
+      "kind": "ft",
+      "url": "/tiny_shop_owner/",
+      "frame": [
+        "/tiny_shop_owner/",
+        "/tiny_shop_owner"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/tiny_shop_owner/instructions.html",
+      "preloadBytes": 1855546,
+      "lazyBytes": 1033817,
+      "thumb": "tiny-shop-owner.webp"
+    },
+    {
+      "title": "Paper Minecraft",
+      "description": "Minecraft... now in 2D! Enjoy this fun classic with one dimension removed. Thanks to griffpatch for the original project on Scratch.",
+      "genre": "Sandbox",
+      "difficulty": "Medium",
+      "href": "/paper_minecraft",
+      "id": "paper-minecraft",
+      "kind": "ft",
+      "url": "/paper_minecraft/",
+      "frame": [
+        "/paper_minecraft/",
+        "/paper_minecraft"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/paper_minecraft/instructions.html",
+      "preloadBytes": 1856285,
+      "lazyBytes": 7897160,
+      "thumb": "paper-minecraft.webp"
+    },
+    {
+      "title": "Brain Test",
+      "description": "Test your brain with this challenging puzzle game. Can you solve them all?",
+      "genre": "Puzzle",
+      "difficulty": "Hard",
+      "href": "/brain_test",
+      "id": "brain-test",
+      "kind": "ft",
+      "url": "/brain_test/",
+      "frame": [
+        "/brain_test/",
+        "/brain_test"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/brain_test/instructions.html",
+      "preloadBytes": 1850153,
+      "lazyBytes": 32827377,
+      "thumb": "brain-test.webp"
+    },
+    {
+      "title": "Ragdoll Archers",
+      "description": "Dodge arrows and defeat your enemies in this action-packed archery game.",
+      "genre": "Action",
+      "difficulty": "Medium",
+      "href": "/ragdoll_archers",
+      "id": "ragdoll-archers",
+      "kind": "ft",
+      "url": "/ragdoll_archers/",
+      "frame": [
+        "/ragdoll_archers/",
+        "/ragdoll_archers"
+      ],
+      "buttons": {
+        "home": true,
+        "instr": true,
+        "display": "flex",
+        "lineHeight": "normal"
+      },
+      "instructions": "/ragdoll_archers/instructions.html",
+      "preloadBytes": 1850197,
+      "lazyBytes": 1803143,
+      "thumb": "ragdoll-archers.webp"
+    },
+    {
+      "title": "Suggestion Box",
+      "description": "This is where you can suggest games for us to add to our website. Just fill out a quick form and we'll get right on it. Try it today!",
+      "genre": "",
+      "difficulty": "",
+      "href": "/suggestion_box",
+      "id": "suggestion-box",
+      "kind": "ft",
+      "url": "/suggestion_box",
+      "frame": [
+        "/suggestion_box/",
+        "/suggestion_box"
+      ],
+      "buttons": {
+        "home": false,
+        "instr": false,
+        "display": "block",
+        "lineHeight": "normal"
+      },
+      "instructions": null,
+      "preloadBytes": 6667,
+      "lazyBytes": 0,
+      "isGame": false,
+      "thumb": "suggestion-box.webp",
+      "tabButton": true
+    }
+  ]
+}
