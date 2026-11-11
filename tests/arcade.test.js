@@ -460,7 +460,7 @@ async function suiteLive() {
   const gamesHtml = fs.readFileSync(path.join(FTGAMES, 'games.html'), 'utf8').replace(
     '<a class="game-card" href="/suggestion_box">',
     '<a class="game-card" href="/frogger"><img class="game-card-thumbnail" src="thumbnails/does-not-exist.png" alt="x"><div class="game-card-content"><h2 class="game-card-title">Frogger (new)</h2><p class="game-card-description">A brand new game.</p><div class="game-card-tags"><span class="game-tag game-tag-genre">Genre: Arcade</span><span class="game-tag game-tag-difficulty">Difficulty: Easy</span></div></div></a>\n' +
-    '<a class="game-card" href="/farming_sim_19/"><img class="game-card-thumbnail" src="thumbnails/tetris-thumbnail.png" alt="x"><div class="game-card-content"><h2 class="game-card-title">Farm Copy (new)</h2><p class="game-card-description">No Home button.</p></div></a>\n' +
+    '<a class="game-card" href="/farming_sim_19/index"><img class="game-card-thumbnail" src="thumbnails/tetris-thumbnail.png" alt="x"><div class="game-card-content"><h2 class="game-card-title">Farm Copy (new)</h2><p class="game-card-description">No Home button.</p></div></a>\n' +
     '<a class="game-card" href="/suggestion_box">');
   const { context, page, stats, problems } = await openArcade(FAST_PAGE, { gamesHtml });
   await waitView(page, 'home', 60000);
