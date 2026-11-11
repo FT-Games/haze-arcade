@@ -468,17 +468,20 @@ async function suiteLive() {
   check('live list: a game added to the repository shows up without updating the extension', titles.includes('Frogger (new)'), `${titles.length} cards`);
   check('live list: a missing thumbnail falls back to a drawn card', (await page.locator('#grid .card', { has: page.locator('.card-title', { hasText: 'Frogger (new)' }) }).locator('.ph').count()) === 1);
   check('live list: a new card\'s thumbnail loads from GitHub', await page.locator('#grid .card', { has: page.locator('.card-title', { hasText: 'Farm Copy (new)' }) }).locator('img').evaluate((i) => i.complete && i.naturalWidth > 0).catch(() => false));
+  // Frogger is in the repository but not on the site, and its page has no Home button of its own.
   await clickCard(page, 'Frogger (new)');
   await waitView(page, 'game', 120000);
   const frame = await gameFrame(page);
   check('live list: the new game plays', await frame.evaluate(() => document.getElementById('loading').hidden && document.getElementById('error').hidden));
-  await frame.click('#homeButton');
+  const froggerHome = await page.isVisible('#homeBtn');
+  check('live list: a new game without a Home button of its own gets the arcade\'s (Frogger)', froggerHome);
+  if (froggerHome) await page.click('#homeBtn');
   await waitView(page, 'home', 30000);
   // A new game without a Home button of its own still gets the arcade's.
   await clickCard(page, 'Farm Copy (new)');
   await waitView(page, 'game', 120000);
   const overlay = await page.isVisible('#homeBtn');
-  check('live list: a new game without a Home button gets the arcade\'s', overlay);
+  check('live list: a new game without a Home button gets the arcade\'s (Farming Sim page)', overlay);
   if (overlay) await page.click('#homeBtn');
   await waitView(page, 'home', 30000).catch(() => {});
   check('live list: no errors', problems.errors.length === 0, problems.errors.join(' | '));
